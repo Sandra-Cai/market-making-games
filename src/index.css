@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,10 +7,11 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    background: #181A20;
   }
   
   body {
-    @apply bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white min-h-screen;
+    @apply bg-finance-bg text-white font-inter min-h-screen;
   }
 }
 
@@ -40,4 +43,13 @@
   .progress-fill {
     @apply bg-gradient-to-r from-primary-500 to-success-500 h-2 rounded-full transition-all duration-300;
   }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #23272F;
+}
+::-webkit-scrollbar-thumb {
+  background: #2D2F36;
+  border-radius: 4px;
 } 
