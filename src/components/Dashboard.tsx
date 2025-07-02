@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Trophy, BarChart3, Star, Flame, Award } from 'lucide-react';
+import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp, Newspaper } from 'lucide-react';
 import { Game } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -10,6 +10,31 @@ interface DashboardProps {
   games: Game[];
   userStats: any;
 }
+
+const dummyHistory = [
+  { name: 'Mon', score: 800 },
+  { name: 'Tue', score: 967 },
+  { name: 'Wed', score: 1098 },
+  { name: 'Thu', score: 1200 },
+  { name: 'Fri', score: 1100 },
+  { name: 'Sat', score: 1400 },
+  { name: 'Sun', score: 1500 },
+];
+
+const leaderboard = [
+  { name: 'Alice', score: 1500, change: '+2.1%' },
+  { name: 'Bob', score: 1400, change: '+1.7%' },
+  { name: 'You', score: 1200, change: '+1.2%' },
+  { name: 'Carol', score: 1100, change: '-0.5%' },
+  { name: 'Dave', score: 900, change: '-1.1%' },
+];
+
+const newsFeed = [
+  { title: 'How to Master Market Making', time: '2h ago' },
+  { title: 'Probability: The Secret Weapon in Trading', time: '5h ago' },
+  { title: 'Mental Math Tricks for Quants', time: '1d ago' },
+  { title: 'Strategy Game: New Scenarios Added!', time: '2d ago' },
+];
 
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore(s => s.gameHistory);
@@ -211,6 +236,78 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Mini-charts/stat cards */}
+        <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="w-5 h-5 text-finance-green" />
+              <span className="text-finance-gray text-xs">Score Trend</span>
+            </div>
+            <div className="text-2xl font-bold text-finance-gold mb-1">{userStats.totalScore}</div>
+            <ResponsiveContainer width="100%" height={40}>
+              <LineChart data={dummyHistory} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <Line type="monotone" dataKey="score" stroke="#FFD700" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
+            <div className="flex items-center gap-2 mb-2">
+              <Award className="w-5 h-5 text-finance-purple" />
+              <span className="text-finance-gray text-xs">Current Streak</span>
+            </div>
+            <div className="text-2xl font-bold text-finance-green mb-1">{userStats.currentStreak}</div>
+            <div className="text-xs text-finance-gray">Best: {userStats.bestScore}</div>
+          </div>
+          <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
+            <div className="flex items-center gap-2 mb-2">
+              <BarChart3 className="w-5 h-5 text-finance-blue" />
+              <span className="text-finance-gray text-xs">Level</span>
+            </div>
+            <div className="text-2xl font-bold text-finance-blue mb-1">{userStats.level}</div>
+            <div className="text-xs text-finance-gray">Avg Score: {userStats.averageScore}</div>
+          </div>
+        </div>
+        {/* Leaderboard */}
+        <div className="bg-finance-card rounded-xl p-5 shadow-md">
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 className="w-5 h-5 text-finance-gold" />
+            <span className="font-semibold text-finance-gold">Top Movers</span>
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-finance-gray">
+                <th className="text-left font-normal">Name</th>
+                <th className="text-right font-normal">Score</th>
+                <th className="text-right font-normal">Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaderboard.map((entry, idx) => (
+                <tr key={entry.name} className={idx === 2 ? 'bg-finance-bg-light' : ''}>
+                  <td className="py-1 font-semibold text-white">{entry.name}</td>
+                  <td className="py-1 text-right text-finance-gold font-bold">{entry.score}</td>
+                  <td className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-finance-green' : 'text-finance-red'}`}>{entry.change}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* News/Feed */}
+        <div className="col-span-1 md:col-span-3 bg-finance-card rounded-xl p-5 shadow-md mt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Newspaper className="w-5 h-5 text-finance-blue" />
+            <span className="font-semibold text-finance-blue">Market News & Tips</span>
+          </div>
+          <ul>
+            {newsFeed.map((item, idx) => (
+              <li key={idx} className="flex justify-between py-2 border-b border-finance-border last:border-0">
+                <span className="text-white font-medium">{item.title}</span>
+                <span className="text-finance-gray text-xs">{item.time}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {/* Footer */}
         <motion.div

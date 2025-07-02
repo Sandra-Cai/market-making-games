@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Brain, BarChart3, Settings as SettingsIcon, Award, Home, Bell, User, Search, TrendingUp, DollarSign } from 'lucide-react';
+import TickerTape from './TickerTape';
 
 const navItems = [
   { label: 'Dashboard', icon: <Home />, to: '/' },
@@ -62,11 +63,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               className="bg-transparent outline-none text-white placeholder-finance-gray w-full font-inter"
             />
           </div>
-          {/* Ticker tape placeholder */}
+          {/* Ticker tape */}
           <div className="hidden md:block w-1/3 mx-6">
-            <div className="overflow-hidden whitespace-nowrap animate-marquee text-finance-gold text-sm font-semibold">
-              MMG Index +2.3% | Market Volatility 1.2% | Top Score 1200 | Streak 3 | Level 5
-            </div>
+            <TickerTape />
           </div>
           <div className="flex items-center gap-6">
             <Bell className="w-6 h-6 text-finance-gray hover:text-finance-gold cursor-pointer" />
