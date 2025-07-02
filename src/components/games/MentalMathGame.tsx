@@ -144,7 +144,7 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
 
       return () => clearInterval(interval);
     }
-  }, [gameState, problemsAnswered]);
+  }, [gameState, problemsAnswered, endGame]);
 
   if (gameState === 'waiting') {
     return (

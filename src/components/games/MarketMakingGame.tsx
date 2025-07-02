@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, DollarSign, Clock, Target, CheckCircle, XCircle } from 'lucide-react';
+import { TrendingUp, Clock, Target, CheckCircle } from 'lucide-react';
 import { MarketState, MarketOrder, GameStats } from '../../types/game';
 
 interface MarketMakingGameProps {
@@ -136,7 +136,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         clearInterval(timeInterval);
       };
     }
-  }, [gameState, updateMarket]);
+  }, [gameState, updateMarket, endGame]);
 
   if (gameState === 'waiting') {
     return (

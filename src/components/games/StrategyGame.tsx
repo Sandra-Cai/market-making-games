@@ -160,7 +160,7 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
 
       return () => clearInterval(interval);
     }
-  }, [gameState]);
+  }, [gameState, endGame]);
 
   if (gameState === 'waiting') {
     return (

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { GameStats, GameType, Achievement, LeaderboardEntry, GameSession } from '../types/game';
+import { GameStats, GameType, Achievement, GameSession } from '../types/game';
 
 interface GameState {
   // User data

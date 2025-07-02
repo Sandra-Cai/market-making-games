@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Target, CheckCircle, XCircle, Brain, Clock } from 'lucide-react';
+import { Target, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { ProbabilityProblem, GameStats } from '../../types/game';
 
 interface ProbabilityGameProps {
@@ -123,7 +123,7 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
 
       return () => clearInterval(interval);
     }
-  }, [gameState]);
+  }, [gameState, endGame]);
 
   if (gameState === 'waiting') {
     return (

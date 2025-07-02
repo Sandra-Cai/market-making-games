@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Brain, Trophy, BarChart3, Settings as SettingsIcon, Award } from 'lucide-react';
+import { Brain, BarChart3, Settings as SettingsIcon, Award } from 'lucide-react';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: <Brain className="w-5 h-5" /> },
