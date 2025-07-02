@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Zap, CheckCircle, XCircle, Clock, Target } from 'lucide-react';
 import { MathProblem, GameStats } from '../../types/game';
@@ -106,13 +106,13 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
     setTimeLeft(10);
   };
 
-  const endGame = () => {
+  const endGame = useCallback(() => {
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
       gamesPlayed: 1
     });
-  };
+  }, [score, onStatsUpdate]);
 
   useEffect(() => {
     if (gameState === 'playing') {

@@ -110,13 +110,13 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     setGameMessage('Game started! Place orders to make markets.');
   };
 
-  const endGame = () => {
+  const endGame = useCallback(() => {
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
       gamesPlayed: 1
     });
-  };
+  }, [score, onStatsUpdate]);
 
   useEffect(() => {
     if (gameState === 'playing') {

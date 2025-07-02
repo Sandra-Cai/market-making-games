@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Target, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { ProbabilityProblem, GameStats } from '../../types/game';
@@ -101,13 +101,13 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
     setCurrentProblem(getRandomProblem());
   };
 
-  const endGame = () => {
+  const endGame = useCallback(() => {
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
       gamesPlayed: 1
     });
-  };
+  }, [score, onStatsUpdate]);
 
   useEffect(() => {
     if (gameState === 'playing') {

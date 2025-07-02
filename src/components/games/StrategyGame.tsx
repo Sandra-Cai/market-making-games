@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, CheckCircle, XCircle, Clock, Target, Lightbulb } from 'lucide-react';
 import { StrategyScenario, GameStats } from '../../types/game';
@@ -138,13 +138,13 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
     setCurrentScenario(getRandomScenario());
   };
 
-  const endGame = () => {
+  const endGame = useCallback(() => {
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
       gamesPlayed: 1
     });
-  };
+  }, [score, onStatsUpdate]);
 
   useEffect(() => {
     if (gameState === 'playing') {
