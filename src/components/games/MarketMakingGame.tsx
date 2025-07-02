@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, Clock, Target, CheckCircle } from 'lucide-react';
 import { MarketState, MarketOrder, GameStats } from '../../types/game';
+import { XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 interface MarketMakingGameProps {
   onStatsUpdate: (stats: Partial<GameStats>) => void;
@@ -22,6 +23,8 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   const [timeLeft, setTimeLeft] = useState(60);
   const [userOrders, setUserOrders] = useState<MarketOrder[]>([]);
   const [gameMessage, setGameMessage] = useState('');
+  const [priceHistory, setPriceHistory] = useState<{ timestamp: number; price: number }[]>([]);
+  const [tradeHistory, setTradeHistory] = useState<{ timestamp: number; price: number; quantity: number; side: 'buy' | 'sell' }[]>([]);
 
   const generateMarketEvent = useCallback(() => {
     const events = [
@@ -72,9 +75,25 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       const noise = (Math.random() - 0.5) * prev.volatility;
       newPrice *= (1 + noise);
 
+      const finalPrice = Math.max(50, Math.min(200, newPrice));
+      
+      // Update price history
+      setPriceHistory(prev => [...prev.slice(-19), { timestamp: Date.now(), price: finalPrice }]);
+      
+      // Simulate some trades
+      if (Math.random() > 0.7) {
+        const trade = {
+          timestamp: Date.now(),
+          price: finalPrice + (Math.random() - 0.5) * 2,
+          quantity: Math.floor(Math.random() * 100) + 50,
+          side: Math.random() > 0.5 ? 'buy' as const : 'sell' as const
+        };
+        setTradeHistory(prev => [trade, ...prev.slice(0, 9)]);
+      }
+
       return {
         ...prev,
-        currentPrice: Math.max(50, Math.min(200, newPrice)),
+        currentPrice: finalPrice,
         volatility: Math.max(0.005, Math.min(0.1, newVolatility)),
         volume: Math.max(100, Math.min(5000, newVolume)),
         spread: prev.spread + (Math.random() - 0.5) * 0.1
@@ -206,87 +225,176 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       </div>
 
       {/* Market Display */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-card p-6">
-          <h3 className="text-xl font-bold mb-4">Market State</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Current Price:</span>
-              <span className="font-bold text-2xl">${marketState.currentPrice.toFixed(2)}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Price Chart */}
+        <div className="lg:col-span-2 bg-finance-card rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-finance-gold">Live Price Chart</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={priceHistory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#FFD700" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#FFD700" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="timestamp" hide />
+                <YAxis domain={['dataMin - 2', 'dataMax + 2']} tick={{ fill: '#A0AEC0' }} />
+                <Area type="monotone" dataKey="price" stroke="#FFD700" strokeWidth={2} fill="url(#priceGradient)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <div>
+              <span className="text-finance-gray text-sm">Current Price</span>
+              <div className="text-2xl font-bold text-finance-gold">${marketState.currentPrice.toFixed(2)}</div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Spread:</span>
-              <span className="font-bold">${marketState.spread.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Volume:</span>
-              <span className="font-bold">{marketState.volume.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Volatility:</span>
-              <span className="font-bold">{(marketState.volatility * 100).toFixed(1)}%</span>
+            <div className="text-right">
+              <span className="text-finance-gray text-sm">24h Change</span>
+              <div className="text-lg font-bold text-finance-green">+2.3%</div>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6">
-          <h3 className="text-xl font-bold mb-4">Place Orders</h3>
+        {/* Market Stats */}
+        <div className="bg-finance-card rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-finance-gold">Market Stats</h3>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Price</label>
-              <input
-                type="number"
-                step="0.01"
-                defaultValue={marketState.currentPrice}
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
-              />
+            <div className="flex justify-between">
+              <span className="text-finance-gray">Spread:</span>
+              <span className="font-bold text-finance-blue">${marketState.spread.toFixed(2)}</span>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Quantity</label>
-              <input
-                type="number"
-                defaultValue={100}
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
-              />
+            <div className="flex justify-between">
+              <span className="text-finance-gray">Volume:</span>
+              <span className="font-bold text-finance-purple">{marketState.volume.toLocaleString()}</span>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => placeOrder('buy', marketState.currentPrice, 100)}
-                className="flex-1 bg-success-600 hover:bg-success-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
-              >
-                Buy
-              </button>
-              <button
-                onClick={() => placeOrder('sell', marketState.currentPrice, 100)}
-                className="flex-1 bg-danger-600 hover:bg-danger-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
-              >
-                Sell
-              </button>
+            <div className="flex justify-between">
+              <span className="text-finance-gray">Volatility:</span>
+              <span className="font-bold text-finance-red">{(marketState.volatility * 100).toFixed(1)}%</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Order Book */}
-      <div className="glass-card p-6">
-        <h3 className="text-xl font-bold mb-4">Your Orders</h3>
+      {/* Order Book and Trade History */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Order Book */}
+        <div className="bg-finance-card rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-finance-gold">Order Book</h3>
+          <div className="space-y-2">
+            {/* Sell Orders */}
+            <div className="text-finance-red text-sm font-semibold mb-2">SELL ORDERS</div>
+            {Array.from({ length: 5 }, (_, i) => (
+              <div key={`sell-${i}`} className="flex justify-between text-sm">
+                <span className="text-finance-red">${(marketState.currentPrice + (i + 1) * 0.5).toFixed(2)}</span>
+                <span className="text-finance-gray">{Math.floor(Math.random() * 200) + 100}</span>
+              </div>
+            ))}
+            
+            {/* Current Price */}
+            <div className="border-t border-finance-border my-2 pt-2">
+              <div className="flex justify-between font-bold text-finance-gold">
+                <span>${marketState.currentPrice.toFixed(2)}</span>
+                <span>MARKET</span>
+              </div>
+            </div>
+            
+            {/* Buy Orders */}
+            <div className="text-finance-green text-sm font-semibold mb-2">BUY ORDERS</div>
+            {Array.from({ length: 5 }, (_, i) => (
+              <div key={`buy-${i}`} className="flex justify-between text-sm">
+                <span className="text-finance-green">${(marketState.currentPrice - (i + 1) * 0.5).toFixed(2)}</span>
+                <span className="text-finance-gray">{Math.floor(Math.random() * 200) + 100}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Trade History */}
+        <div className="bg-finance-card rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-finance-gold">Recent Trades</h3>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {tradeHistory.length === 0 ? (
+              <div className="text-finance-gray text-center py-8">No recent trades</div>
+            ) : (
+              tradeHistory.map((trade, index) => (
+                <div key={index} className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${trade.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'}`}></div>
+                    <span className={trade.side === 'buy' ? 'text-finance-green' : 'text-finance-red'}>
+                      {trade.side.toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-finance-gold font-bold">${trade.price.toFixed(2)}</span>
+                  <span className="text-finance-gray">{trade.quantity}</span>
+                  <span className="text-finance-gray text-xs">
+                    {new Date(trade.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Place Orders */}
+      <div className="bg-finance-card rounded-xl p-6 shadow-md">
+        <h3 className="text-xl font-bold mb-4 text-finance-gold">Place Orders</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-finance-gray mb-2">Price</label>
+            <input
+              type="number"
+              step="0.01"
+              defaultValue={marketState.currentPrice}
+              className="w-full bg-finance-bg border border-finance-border rounded-lg px-3 py-2 text-white focus:border-finance-gold focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-finance-gray mb-2">Quantity</label>
+            <input
+              type="number"
+              defaultValue={100}
+              className="w-full bg-finance-bg border border-finance-border rounded-lg px-3 py-2 text-white focus:border-finance-gold focus:outline-none"
+            />
+          </div>
+        </div>
+        <div className="flex gap-3 mt-4">
+          <button
+            onClick={() => placeOrder('buy', marketState.currentPrice, 100)}
+            className="flex-1 bg-finance-green hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+          >
+            BUY
+          </button>
+          <button
+            onClick={() => placeOrder('sell', marketState.currentPrice, 100)}
+            className="flex-1 bg-finance-red hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+          >
+            SELL
+          </button>
+        </div>
+      </div>
+
+      {/* Your Orders */}
+      <div className="bg-finance-card rounded-xl p-6 shadow-md">
+        <h3 className="text-xl font-bold mb-4 text-finance-gold">Your Orders</h3>
         {userOrders.length === 0 ? (
-          <p className="text-gray-400 text-center py-8">No orders placed yet</p>
+          <p className="text-finance-gray text-center py-8">No orders placed yet</p>
         ) : (
           <div className="space-y-2">
             {userOrders.slice(-5).reverse().map(order => (
               <div
                 key={order.id}
-                className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                className="flex items-center justify-between p-3 bg-finance-bg rounded-lg border border-finance-border"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${
-                    order.side === 'buy' ? 'bg-success-400' : 'bg-danger-400'
+                    order.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'
                   }`}></div>
-                  <span className="font-semibold">{order.side.toUpperCase()}</span>
-                  <span className="text-gray-400">{order.quantity}</span>
+                  <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
+                  <span className="text-finance-gray">{order.quantity}</span>
                 </div>
-                <span className="font-bold">${order.price.toFixed(2)}</span>
+                <span className="font-bold text-finance-gold">${order.price.toFixed(2)}</span>
               </div>
             ))}
           </div>

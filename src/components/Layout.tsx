@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Brain, BarChart3, Settings as SettingsIcon, Award, Home, Bell, User, Search, TrendingUp, DollarSign } from 'lucide-react';
+import { Brain, BarChart3, Settings as SettingsIcon, Award, Home, Bell, User, Search, DollarSign } from 'lucide-react';
 import TickerTape from './TickerTape';
 
 const navItems = [

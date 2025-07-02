@@ -5,6 +5,7 @@ import { Game } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useNavigate } from 'react-router-dom';
+import FinanceGameCard from './games/FinanceGameCard';
 
 interface DashboardProps {
   games: Game[];
@@ -35,6 +36,21 @@ const newsFeed = [
   { title: 'Mental Math Tricks for Quants', time: '1d ago' },
   { title: 'Strategy Game: New Scenarios Added!', time: '2d ago' },
 ];
+
+const gameSparkData = {
+  'market-making': [
+    { value: 800 }, { value: 850 }, { value: 900 }, { value: 950 }, { value: 1000 }, { value: 1050 }, { value: 1100 }
+  ],
+  'probability': [
+    { value: 600 }, { value: 650 }, { value: 700 }, { value: 750 }, { value: 800 }, { value: 850 }, { value: 900 }
+  ],
+  'mental-math': [
+    { value: 1000 }, { value: 1050 }, { value: 1100 }, { value: 1150 }, { value: 1200 }, { value: 1250 }, { value: 1300 }
+  ],
+  'strategy': [
+    { value: 700 }, { value: 750 }, { value: 800 }, { value: 850 }, { value: 900 }, { value: 950 }, { value: 1000 }
+  ]
+};
 
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore(s => s.gameHistory);
@@ -190,50 +206,22 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           )}
         </motion.div>
 
-        {/* Games Grid */}
+        {/* Game Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         >
-          {games.map((game, index) => (
-            <motion.div
+          {games.map((game) => (
+            <FinanceGameCard
               key={game.id}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate(`/game/${game.id}`)}
-              className={`game-card relative overflow-hidden group cursor-pointer`}
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
-              <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`p-3 rounded-lg bg-gradient-to-br ${game.color}`}>
-                    <game.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold">{game.title}</h3>
-                    <p className="text-gray-400">{game.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      game.difficulty === 'Beginner' ? 'bg-success-500/20 text-success-400' :
-                      game.difficulty === 'Intermediate' ? 'bg-primary-500/20 text-primary-400' :
-                      'bg-danger-500/20 text-danger-400'
-                    }`}>
-                      {game.difficulty}
-                    </span>
-                    <span className="text-gray-400 text-sm">{game.category}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-primary-400">
-                      {index === 0 ? '🎯' : index === 1 ? '🎲' : index === 2 ? '⚡' : '🧠'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              icon={React.createElement(game.icon, { className: "w-6 h-6" })}
+              title={game.title}
+              highScore={game.highScore || 0}
+              change={game.highScore ? '+5.2%' : '0%'}
+              sparkData={gameSparkData[game.id] || []}
+              onClick={() => navigate(`/games/${game.id}`)}
+            />
           ))}
         </motion.div>
 
