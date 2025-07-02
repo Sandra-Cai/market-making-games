@@ -31,6 +31,7 @@ interface GameState {
   toggleSound: () => void;
   toggleNotifications: () => void;
   resetProgress: () => void;
+  checkAchievements: () => void;
 }
 
 const initialStats: GameStats = {
@@ -112,6 +113,7 @@ export const useGameStore = create<GameState>()(
         
         // Update stats
         const newStats = {
+          ...state.userStats,
           totalScore: state.userStats.totalScore + finalScore,
           gamesPlayed: state.userStats.gamesPlayed + 1,
           totalPlayTime: state.userStats.totalPlayTime + gameDuration,

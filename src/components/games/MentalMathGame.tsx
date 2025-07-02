@@ -54,7 +54,8 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
       question: `${num1} ${operation} ${num2} = ?`,
       answer,
       timeLimit: 10,
-      difficulty: 'medium'
+      difficulty: 'medium',
+      category: 'arithmetic'
     };
   };
 

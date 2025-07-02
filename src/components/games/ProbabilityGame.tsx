@@ -22,35 +22,45 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
       options: ["1/6", "1/3", "1/2", "5/6"],
       correctAnswer: 0,
       explanation: "A fair die has 6 sides, so the probability of rolling any specific number is 1/6.",
-      difficulty: "easy"
+      difficulty: "easy",
+      category: 'basic',
+      timeLimit: 30
     },
     {
       question: "If you flip a coin 3 times, what is the probability of getting exactly 2 heads?",
       options: ["1/8", "3/8", "1/2", "5/8"],
       correctAnswer: 1,
       explanation: "There are 3 ways to get exactly 2 heads: HHT, HTH, THH. Total outcomes = 2³ = 8. So probability = 3/8.",
-      difficulty: "medium"
+      difficulty: "medium",
+      category: 'basic',
+      timeLimit: 30
     },
     {
       question: "In a deck of 52 cards, what is the probability of drawing a face card (Jack, Queen, King)?",
       options: ["3/13", "1/4", "1/13", "12/52"],
       correctAnswer: 0,
       explanation: "There are 12 face cards (4 each of Jack, Queen, King) out of 52 cards. 12/52 = 3/13.",
-      difficulty: "easy"
+      difficulty: "easy",
+      category: 'basic',
+      timeLimit: 30
     },
     {
       question: "What is the probability of getting a sum of 7 when rolling two dice?",
       options: ["1/6", "1/12", "1/36", "6/36"],
       correctAnswer: 0,
       explanation: "There are 6 ways to get a sum of 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1). Total outcomes = 36. So 6/36 = 1/6.",
-      difficulty: "medium"
+      difficulty: "medium",
+      category: 'basic',
+      timeLimit: 30
     },
     {
       question: "If P(A) = 0.3 and P(B) = 0.4, and A and B are independent, what is P(A and B)?",
       options: ["0.12", "0.7", "0.1", "0.3"],
       correctAnswer: 0,
       explanation: "For independent events, P(A and B) = P(A) × P(B) = 0.3 × 0.4 = 0.12.",
-      difficulty: "hard"
+      difficulty: "hard",
+      category: 'basic',
+      timeLimit: 30
     }
   ];
 

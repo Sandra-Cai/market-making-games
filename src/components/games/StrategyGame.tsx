@@ -29,7 +29,9 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       ],
       correctAnswer: 3,
       explanation: 'In high volatility markets, gradual entry reduces risk and allows you to average down if prices fall. This strategy balances opportunity with risk management.',
-      points: 150
+      points: 150,
+      difficulty: 'medium',
+      category: 'decision-making'
     },
     {
       id: '2',
@@ -43,7 +45,9 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       ],
       correctAnswer: 2,
       explanation: 'Reducing position size allows you to stay in the trade while managing risk. This is better than either cutting losses too early or taking excessive risk.',
-      points: 150
+      points: 150,
+      difficulty: 'medium',
+      category: 'decision-making'
     },
     {
       id: '3',
@@ -57,7 +61,9 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       ],
       correctAnswer: 2,
       explanation: 'This allocation provides good diversification with moderate risk. It captures growth potential while maintaining stability through bonds.',
-      points: 150
+      points: 150,
+      difficulty: 'medium',
+      category: 'decision-making'
     },
     {
       id: '4',
@@ -71,7 +77,9 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       ],
       correctAnswer: 2,
       explanation: 'Trading on insider information is illegal and unethical. The correct approach is to report it and avoid any trading in the affected security.',
-      points: 200
+      points: 200,
+      difficulty: 'medium',
+      category: 'decision-making'
     },
     {
       id: '5',
@@ -85,7 +93,9 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       ],
       correctAnswer: 2,
       explanation: 'Gradual reallocation to defensive sectors reduces risk while maintaining market exposure. This is more prudent than either panic selling or ignoring the signals.',
-      points: 150
+      points: 150,
+      difficulty: 'medium',
+      category: 'decision-making'
     }
   ];
 

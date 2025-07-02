@@ -1,29 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, TrendingUp, Target, Trophy, BarChart3, Zap, Star, Flame, Award } from 'lucide-react';
-import { Game, GameType, GameStats } from '../types/game';
+import { Brain, Trophy, BarChart3, Star, Flame, Award } from 'lucide-react';
+import { Game } from '../types/game';
+import { useGameStore } from '../store/gameStore';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardProps {
   games: Game[];
-  userStats: GameStats;
-  onGameSelect: (gameId: GameType) => void;
+  userStats: any;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ games, userStats, onGameSelect }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
+const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
+  const gameHistory = useGameStore(s => s.gameHistory);
+  const achievements = useGameStore(s => s.achievements);
+  const navigate = useNavigate();
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
+  // Prepare data for the performance chart
+  const chartData = gameHistory.slice().reverse().map((session, idx) => ({
+    name: `#${gameHistory.length - idx}`,
+    score: session.score,
+    game: session.gameType,
+    date: new Date(session.timestamp).toLocaleDateString()
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -47,83 +46,140 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats, onGameSelect })
 
         {/* Stats Section */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         >
-          <motion.div variants={itemVariants} className="stat-card">
+          <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Trophy className="w-6 h-6 text-yellow-400" />
               <span className="text-2xl font-bold">{userStats.totalScore}</span>
             </div>
             <p className="text-gray-400">Total Score</p>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="stat-card">
+          </div>
+          <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
               <BarChart3 className="w-6 h-6 text-primary-400" />
               <span className="text-2xl font-bold">{userStats.gamesPlayed}</span>
             </div>
             <p className="text-gray-400">Games Played</p>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="stat-card">
+          </div>
+          <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Star className="w-6 h-6 text-success-400" />
               <span className="text-2xl font-bold">{(userStats.winRate * 100).toFixed(0)}%</span>
             </div>
             <p className="text-gray-400">Win Rate</p>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="stat-card">
+          </div>
+          <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Flame className="w-6 h-6 text-orange-400" />
               <span className="text-2xl font-bold">{userStats.currentStreak}</span>
             </div>
             <p className="text-gray-400">Current Streak</p>
-          </motion.div>
+          </div>
         </motion.div>
 
-        {/* Level Progress */}
+        {/* Performance Chart & Achievements */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {/* Performance Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-6"
+          >
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <BarChart3 className="w-6 h-6 text-primary-400" /> Performance
+            </h2>
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="name" tick={{ fill: '#94a3b8' }} />
+                  <YAxis tick={{ fill: '#94a3b8' }} />
+                  <Tooltip contentStyle={{ background: '#1e293b', border: 'none', color: '#fff' }} />
+                  <Line type="monotone" dataKey="score" stroke="#60a5fa" strokeWidth={3} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-gray-400 text-center py-8">No game history yet</div>
+            )}
+          </motion.div>
+
+          {/* Achievements */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-6"
+          >
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Award className="w-6 h-6 text-yellow-400" /> Achievements
+            </h2>
+            {achievements.length > 0 ? (
+              <div className="flex flex-wrap gap-4">
+                {achievements.slice(-6).reverse().map(a => (
+                  <div key={a.id} className="flex flex-col items-center p-2">
+                    <span className="text-3xl mb-1">{a.icon}</span>
+                    <span className="text-sm font-semibold text-white">{a.title}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-gray-400 text-center py-8">No achievements yet</div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* Recent Game History */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="glass-card p-6 mb-12"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Level {userStats.level}</h2>
-            <Award className="w-8 h-8 text-yellow-400" />
-          </div>
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${(userStats.totalScore % 1000) / 10}%` }}
-            ></div>
-          </div>
-          <p className="text-gray-400 mt-2">
-            {userStats.totalScore % 1000} / 1000 XP to next level
-          </p>
+          <h2 className="text-xl font-bold mb-4">Recent Games</h2>
+          {gameHistory.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="text-gray-400">
+                    <th className="py-2 px-4">Game</th>
+                    <th className="py-2 px-4">Score</th>
+                    <th className="py-2 px-4">Level</th>
+                    <th className="py-2 px-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gameHistory.slice(0, 5).map(session => (
+                    <tr key={session.id} className="hover:bg-white/10 transition">
+                      <td className="py-2 px-4 font-semibold capitalize">{session.gameType.replace('-', ' ')}</td>
+                      <td className="py-2 px-4">{session.score}</td>
+                      <td className="py-2 px-4">{session.level}</td>
+                      <td className="py-2 px-4">{new Date(session.timestamp).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-gray-400 text-center py-8">No recent games played</div>
+          )}
         </motion.div>
 
         {/* Games Grid */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-8"
         >
           {games.map((game, index) => (
             <motion.div
               key={game.id}
-              variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => onGameSelect(game.id)}
-              className={`game-card relative overflow-hidden group`}
+              onClick={() => navigate(`/game/${game.id}`)}
+              className={`game-card relative overflow-hidden group cursor-pointer`}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
-              
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-4">
                   <div className={`p-3 rounded-lg bg-gradient-to-br ${game.color}`}>
@@ -134,7 +190,6 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats, onGameSelect })
                     <p className="text-gray-400">{game.description}</p>
                   </div>
                 </div>
-                
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -146,7 +201,6 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats, onGameSelect })
                     </span>
                     <span className="text-gray-400 text-sm">{game.category}</span>
                   </div>
-                  
                   <div className="text-right">
                     <div className="text-2xl font-bold text-primary-400">
                       {index === 0 ? '🎯' : index === 1 ? '🎲' : index === 2 ? '⚡' : '🧠'}

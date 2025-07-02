@@ -14,7 +14,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     spread: 0.5,
     volume: 1000,
     volatility: 0.02,
-    orders: []
+    orders: [],
+    priceHistory: [{ timestamp: Date.now(), price: 100 }],
+    volumeHistory: [{ timestamp: Date.now(), volume: 1000 }]
   });
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
