@@ -5,8 +5,8 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, ErrorBoundaryState> {
-  constructor(props: React.PropsWithChildren<{}>) {
+class ErrorBoundary extends React.Component<React.PropsWithChildren<object>, ErrorBoundaryState> {
+  constructor(props: React.PropsWithChildren<object>) {
     super(props);
     this.state = { hasError: false, error: null };
   }
@@ -15,10 +15,8 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, ErrorBo
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can log error info here if needed
-    // console.error(error, errorInfo);
-  }
+  // componentDidCatch can be used for logging if needed
+  // componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {}
 
   render() {
     if (this.state.hasError) {

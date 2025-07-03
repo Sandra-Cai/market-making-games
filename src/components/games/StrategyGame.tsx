@@ -177,15 +177,15 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="glass-card p-8 text-center"
+        className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
-        <Brain className="w-16 h-16 text-orange-400 mx-auto mb-6" />
-        <h2 className="text-3xl font-bold mb-4">Strategy Games</h2>
-        <p className="text-gray-300 mb-6 max-w-md mx-auto">
+        <Brain className="w-16 h-16 text-red-700 mx-auto mb-8" />
+        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Strategy Games</h2>
+        <p className="text-2xl text-gray-700 mb-12 max-w-xl mx-auto font-light font-sans">
           Develop your strategic decision-making abilities with real-world scenarios. Practice risk
           management, portfolio allocation, and ethical decision-making.
         </p>
-        <button onClick={startGame} className="btn-primary">
+        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-red-700 text-red-700 font-bold text-lg hover:bg-red-700 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-red-700">
           Start Strategy Training
         </button>
       </motion.div>
@@ -197,14 +197,14 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-8 text-center"
+        className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
-        <CheckCircle className="w-16 h-16 text-success-400 mx-auto mb-6" />
-        <h2 className="text-3xl font-bold mb-4">Strategy Training Complete!</h2>
-        <div className="text-4xl font-bold text-orange-400 mb-4">{score}</div>
-        <p className="text-gray-300 mb-6">Final Score</p>
-        <button onClick={startGame} className="btn-primary">
-          Train Again
+        <CheckCircle className="w-16 h-16 text-red-700 mx-auto mb-8" />
+        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Training Complete!</h2>
+        <div className="text-6xl font-bold text-red-700 mb-8 font-serif">{score}</div>
+        <p className="text-2xl text-gray-700 mb-12 font-light font-sans">Final Score</p>
+        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-red-700 text-red-700 font-bold text-lg hover:bg-red-700 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-red-700">
+          Try Again
         </button>
       </motion.div>
     );

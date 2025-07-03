@@ -2,6 +2,7 @@
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
+    './public/index.html',
   ],
   theme: {
     extend: {
@@ -54,15 +55,29 @@ module.exports = {
         'finance-blue': '#1E90FF',
         'finance-gray': '#A0AEC0',
         'finance-border': '#2D2F36',
+        jsnavy: '#1a2233',
+        jsslate: '#232b3a',
+        jsborder: '#2e3748',
+        jsaccent: '#e3b04b',
+        jsred: '#e06c75',
+        jsgreen: '#98c379',
+        jsblue: '#61afef',
+        jsgray: '#abb2bf',
+        jsbg: '#181c23',
+        jswhite: '#f8fafd',
       },
       fontFamily: {
         inter: ['Inter', 'Roboto', 'ui-sans-serif', 'system-ui'],
         roboto: ['Roboto', 'Inter', 'ui-sans-serif', 'system-ui'],
+        sans: ['Inter', 'IBM Plex Sans', 'ui-sans-serif', 'system-ui'],
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce-slow': 'bounce 2s infinite',
-      }
+      },
+      boxShadow: {
+        'js-card': '0 2px 12px 0 rgba(26,34,51,0.08)',
+      },
     },
   },
   plugins: [],

@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp, Newspaper } from 'lucide-react';
-import { Game } from '../types/game';
-import { GameStats } from '../types/game';
+import { Game, GameStats } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import {
   LineChart,
@@ -85,6 +84,14 @@ const gameSparkData = {
   ],
 };
 
+// Map game IDs to GameStats keys
+const gameScoreKey: Record<string, keyof GameStats> = {
+  'market-making': 'marketMakingScore',
+  'probability': 'probabilityScore',
+  'mental-math': 'mentalMathScore',
+  'strategy': 'strategyScore',
+};
+
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore((s) => s.gameHistory);
   const achievements = useGameStore((s) => s.achievements);
@@ -102,24 +109,23 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
     }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-jsbg font-sans">
+      <div className="container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 bg-white">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
           role="banner"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Brain className="w-12 h-12 text-primary-400" aria-hidden="true" />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Brain className="w-14 h-14 text-red-700" aria-hidden="true" />
+            <h1 className="text-6xl font-extrabold text-black tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>
               Market Making Games
             </h1>
           </div>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Your mental gym for quantitative careers. Train your brain with interactive exercises
-            and challenges.
+          <p className="text-2xl text-gray-700 max-w-2xl mx-auto font-light font-sans">
+            Your mental gym for quantitative careers. Train your brain with interactive exercises and challenges.
           </p>
         </motion.div>
 
@@ -127,36 +133,36 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16"
           aria-label="User statistics"
         >
-          <div className="stat-card">
+          <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Trophy className="w-6 h-6 text-yellow-400" aria-hidden="true" />
-              <span className="text-2xl font-bold">{userStats.totalScore}</span>
+              <Trophy className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <span className="text-3xl font-bold text-black font-serif">{userStats.totalScore}</span>
             </div>
-            <p className="text-gray-400">Total Score</p>
+            <p className="text-lg text-gray-700 font-light font-sans">Total Score</p>
           </div>
-          <div className="stat-card">
+          <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <BarChart3 className="w-6 h-6 text-primary-400" aria-hidden="true" />
-              <span className="text-2xl font-bold">{userStats.gamesPlayed}</span>
+              <BarChart3 className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <span className="text-3xl font-bold text-black font-serif">{userStats.gamesPlayed}</span>
             </div>
-            <p className="text-gray-400">Games Played</p>
+            <p className="text-lg text-gray-700 font-light font-sans">Games Played</p>
           </div>
-          <div className="stat-card">
+          <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="w-6 h-6 text-success-400" aria-hidden="true" />
-              <span className="text-2xl font-bold">{(userStats.winRate * 100).toFixed(0)}%</span>
+              <Star className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <span className="text-3xl font-bold text-black font-serif">{(userStats.winRate * 100).toFixed(0)}%</span>
             </div>
-            <p className="text-gray-400">Win Rate</p>
+            <p className="text-lg text-gray-700 font-light font-sans">Win Rate</p>
           </div>
-          <div className="stat-card">
+          <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Flame className="w-6 h-6 text-orange-400" aria-hidden="true" />
-              <span className="text-2xl font-bold">{userStats.currentStreak}</span>
+              <Flame className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <span className="text-3xl font-bold text-black font-serif">{userStats.currentStreak}</span>
             </div>
-            <p className="text-gray-400">Current Streak</p>
+            <p className="text-lg text-gray-700 font-light font-sans">Current Streak</p>
           </div>
         </motion.div>
 
@@ -170,29 +176,29 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             role="img"
             aria-label="Performance chart showing recent game scores"
           >
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <BarChart3 className="w-6 h-6 text-primary-400" aria-hidden="true" /> Performance
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 font-sans">
+              <BarChart3 className="w-6 h-6 text-jsblue" aria-hidden="true" /> Performance
             </h2>
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="name" tick={{ fill: '#94a3b8' }} />
-                  <YAxis tick={{ fill: '#94a3b8' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2e3748" />
+                  <XAxis dataKey="name" tick={{ fill: '#abb2bf', fontFamily: 'Inter, IBM Plex Sans, ui-sans-serif' }} />
+                  <YAxis tick={{ fill: '#abb2bf', fontFamily: 'Inter, IBM Plex Sans, ui-sans-serif' }} />
                   <Tooltip
-                    contentStyle={{ background: '#1e293b', border: 'none', color: '#fff' }}
+                    contentStyle={{ background: '#232b3a', border: 'none', color: '#f8fafd', fontFamily: 'Inter, IBM Plex Sans, ui-sans-serif' }}
                   />
                   <Line
                     type="monotone"
                     dataKey="score"
-                    stroke="#60a5fa"
+                    stroke="#61afef"
                     strokeWidth={3}
-                    dot={{ r: 4 }}
+                    dot={{ r: 4, fill: '#e3b04b' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="text-gray-400 text-center py-8">No game history yet</div>
+              <div className="text-jsgray text-center py-8">No game history yet</div>
             )}
           </motion.div>
 
@@ -262,24 +268,23 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           )}
         </motion.div>
 
-        {/* Game Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-        >
-          {games.map((game) => (
-            <FinanceGameCard
-              key={game.id}
-              icon={React.createElement(game.icon, { className: 'w-6 h-6' })}
-              title={game.title}
-              highScore={game.highScore || 0}
-              change={game.highScore ? '+5.2%' : '0%'}
-              sparkData={gameSparkData[game.id] || []}
-              onClick={() => navigate(`/games/${game.id}`)}
-            />
-          ))}
-        </motion.div>
+        {/* Games Section */}
+        <div className="w-full mb-16">
+          <h2 className="text-3xl font-extrabold text-black mb-8 tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>Games</h2>
+          <div className="flex flex-wrap gap-10 justify-center">
+            {games.map((game) => (
+              <FinanceGameCard
+                key={game.id}
+                icon={<game.icon className="w-8 h-8" />}
+                title={game.title}
+                highScore={userStats[gameScoreKey[game.id]] || 0}
+                change={'+0.0%'}
+                sparkData={gameSparkData[game.id] || []}
+                onClick={() => navigate(`/game/${game.id}`)}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* Mini-charts/stat cards */}
         <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">

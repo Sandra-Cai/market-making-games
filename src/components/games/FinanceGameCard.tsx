@@ -22,23 +22,21 @@ export default function FinanceGameCard({
   return (
     <button
       type="button"
-      className={`bg-finance-card rounded-xl p-5 shadow-md cursor-pointer transition-transform hover:scale-[1.03] border border-finance-border flex flex-col gap-2 min-w-[220px] text-left focus:outline-none focus:ring-2 focus:ring-blue-400`}
+      className={`bg-jsslate rounded-lg border border-jsborder cursor-pointer transition-all hover:border-jsaccent flex flex-col gap-3 min-w-[240px] text-left focus:outline-none focus:ring-2 focus:ring-jsaccent p-7 font-sans group`}
       onClick={onClick}
       aria-label={`View details for ${title}`}
     >
-      <div className="flex items-center gap-3 mb-2">
+      <div className="flex items-center gap-4 mb-3">
         <span className="w-8 h-8 flex items-center justify-center text-2xl" aria-hidden="true">{icon}</span>
-        <span className="font-bold text-lg text-white flex-1">{title}</span>
+        <span className="font-extrabold text-xl text-jswhite flex-1 group-hover:text-jsaccent transition-colors">{title}</span>
       </div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-finance-gray">High Score</span>
-        <span className="text-xs text-finance-gray">Change</span>
+        <span className="text-sm text-jsgray font-light">High Score</span>
+        <span className="text-sm text-jsgray font-light">Change</span>
       </div>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xl font-bold text-finance-gold">{highScore}</span>
-        <span className={`font-semibold ${isUp ? 'text-finance-green' : 'text-finance-red'}`}>
-          {change}
-        </span>
+        <span className="text-2xl font-bold text-jsaccent">{highScore}</span>
+        <span className={`font-semibold ${isUp ? 'text-jsgreen' : 'text-jsred'}`}>{change}</span>
       </div>
       <div className="w-full h-8" role="img" aria-label={`Sparkline chart for ${title} showing recent performance`}>
         <ResponsiveContainer width="100%" height="100%">
@@ -46,7 +44,7 @@ export default function FinanceGameCard({
             <Line
               type="monotone"
               dataKey="value"
-              stroke={isUp ? '#00C176' : '#FF4B5C'}
+              stroke={isUp ? '#61afef' : '#e06c75'}
               strokeWidth={2}
               dot={false}
             />

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import MarketMakingGame from './components/games/MarketMakingGame';
@@ -10,7 +10,6 @@ import { useGameStore } from './store/gameStore';
 import { TrendingUp, Target, Zap, Brain } from 'lucide-react';
 import { Game } from './types/game';
 import { Toaster, toast } from 'react-hot-toast';
-import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Placeholder pages
@@ -71,9 +70,6 @@ const App: React.FC = () => {
   const prevLevel = useRef(userStats.level);
   const prevStreak = useRef(currentStreak);
 
-  // Add navigation state for loading spinner
-  const navigation = (window as any).navigation || { state: 'idle' };
-
   useEffect(() => {
     // Achievement unlocked
     if (achievements.length > prevAchievements.current.length) {
@@ -102,12 +98,6 @@ const App: React.FC = () => {
   return (
     <Router>
       <Toaster position="top-right" />
-      {/* Global loading spinner overlay */}
-      {navigation.state === 'loading' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <LoadingSpinner />
-        </div>
-      )}
       <ErrorBoundary>
         <Layout>
           <Routes>
