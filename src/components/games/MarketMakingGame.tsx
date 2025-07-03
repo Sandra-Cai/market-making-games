@@ -17,38 +17,40 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     volatility: 0.02,
     orders: [],
     priceHistory: [{ timestamp: Date.now(), price: 100 }],
-    volumeHistory: [{ timestamp: Date.now(), volume: 1000 }]
+    volumeHistory: [{ timestamp: Date.now(), volume: 1000 }],
   });
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [userOrders, setUserOrders] = useState<MarketOrder[]>([]);
   const [gameMessage, setGameMessage] = useState('');
   const [priceHistory, setPriceHistory] = useState<{ timestamp: number; price: number }[]>([]);
-  const [tradeHistory, setTradeHistory] = useState<{ timestamp: number; price: number; quantity: number; side: 'buy' | 'sell' }[]>([]);
+  const [tradeHistory, setTradeHistory] = useState<
+    { timestamp: number; price: number; quantity: number; side: 'buy' | 'sell' }[]
+  >([]);
 
   const generateMarketEvent = useCallback(() => {
     const events = [
       { type: 'price_up', magnitude: 0.01, probability: 0.3 },
       { type: 'price_down', magnitude: 0.01, probability: 0.3 },
       { type: 'volatility_up', magnitude: 0.005, probability: 0.2 },
-      { type: 'volume_spike', magnitude: 500, probability: 0.2 }
+      { type: 'volume_spike', magnitude: 500, probability: 0.2 },
     ];
 
     const random = Math.random();
     let cumulative = 0;
-    
+
     for (const event of events) {
       cumulative += event.probability;
       if (random <= cumulative) {
         return event;
       }
     }
-    
+
     return null;
   }, []);
 
   const updateMarket = useCallback(() => {
-    setMarketState(prev => {
+    setMarketState((prev) => {
       const event = generateMarketEvent();
       let newPrice = prev.currentPrice;
       let newVolatility = prev.volatility;
@@ -57,10 +59,10 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       if (event) {
         switch (event.type) {
           case 'price_up':
-            newPrice *= (1 + event.magnitude);
+            newPrice *= 1 + event.magnitude;
             break;
           case 'price_down':
-            newPrice *= (1 - event.magnitude);
+            newPrice *= 1 - event.magnitude;
             break;
           case 'volatility_up':
             newVolatility += event.magnitude;
@@ -73,22 +75,22 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
 
       // Add some random noise
       const noise = (Math.random() - 0.5) * prev.volatility;
-      newPrice *= (1 + noise);
+      newPrice *= 1 + noise;
 
       const finalPrice = Math.max(50, Math.min(200, newPrice));
-      
+
       // Update price history
-      setPriceHistory(prev => [...prev.slice(-19), { timestamp: Date.now(), price: finalPrice }]);
-      
+      setPriceHistory((prev) => [...prev.slice(-19), { timestamp: Date.now(), price: finalPrice }]);
+
       // Simulate some trades
       if (Math.random() > 0.7) {
         const trade = {
           timestamp: Date.now(),
           price: finalPrice + (Math.random() - 0.5) * 2,
           quantity: Math.floor(Math.random() * 100) + 50,
-          side: Math.random() > 0.5 ? 'buy' as const : 'sell' as const
+          side: Math.random() > 0.5 ? ('buy' as const) : ('sell' as const),
         };
-        setTradeHistory(prev => [trade, ...prev.slice(0, 9)]);
+        setTradeHistory((prev) => [trade, ...prev.slice(0, 9)]);
       }
 
       return {
@@ -96,7 +98,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         currentPrice: finalPrice,
         volatility: Math.max(0.005, Math.min(0.1, newVolatility)),
         volume: Math.max(100, Math.min(5000, newVolume)),
-        spread: prev.spread + (Math.random() - 0.5) * 0.1
+        spread: prev.spread + (Math.random() - 0.5) * 0.1,
       };
     });
   }, [generateMarketEvent]);
@@ -107,16 +109,16 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       side,
       price,
       quantity,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    setUserOrders(prev => [...prev, order]);
-    
+    setUserOrders((prev) => [...prev, order]);
+
     // Calculate score based on order placement
     const priceDiff = Math.abs(price - marketState.currentPrice);
     const scoreGain = Math.max(0, 100 - priceDiff * 100);
-    setScore(prev => prev + scoreGain);
-    
+    setScore((prev) => prev + scoreGain);
+
     setGameMessage(`Order placed: ${side} ${quantity} @ $${price.toFixed(2)}`);
     setTimeout(() => setGameMessage(''), 2000);
   };
@@ -133,7 +135,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
-      gamesPlayed: 1
+      gamesPlayed: 1,
     });
   }, [score, onStatsUpdate]);
 
@@ -141,7 +143,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     if (gameState === 'playing') {
       const marketInterval = setInterval(updateMarket, 2000);
       const timeInterval = setInterval(() => {
-        setTimeLeft(prev => {
+        setTimeLeft((prev) => {
           if (prev <= 1) {
             endGame();
             return 0;
@@ -167,8 +169,8 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         <TrendingUp className="w-16 h-16 text-primary-400 mx-auto mb-6" />
         <h2 className="text-3xl font-bold mb-4">Market Making Challenge</h2>
         <p className="text-gray-300 mb-6 max-w-md mx-auto">
-          Practice market making by placing buy and sell orders. Your goal is to maintain a balanced book
-          while profiting from the spread. Watch the market move and react quickly!
+          Practice market making by placing buy and sell orders. Your goal is to maintain a balanced
+          book while profiting from the spread. Watch the market move and react quickly!
         </p>
         <button onClick={startGame} className="btn-primary">
           Start Game
@@ -212,7 +214,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             </div>
           </div>
         </div>
-        
+
         {gameMessage && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -234,20 +236,28 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
               <AreaChart data={priceHistory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#FFD700" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#FFD700" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#FFD700" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="timestamp" hide />
                 <YAxis domain={['dataMin - 2', 'dataMax + 2']} tick={{ fill: '#A0AEC0' }} />
-                <Area type="monotone" dataKey="price" stroke="#FFD700" strokeWidth={2} fill="url(#priceGradient)" />
+                <Area
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#FFD700"
+                  strokeWidth={2}
+                  fill="url(#priceGradient)"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
           <div className="flex justify-between items-center mt-4">
             <div>
               <span className="text-finance-gray text-sm">Current Price</span>
-              <div className="text-2xl font-bold text-finance-gold">${marketState.currentPrice.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-finance-gold">
+                ${marketState.currentPrice.toFixed(2)}
+              </div>
             </div>
             <div className="text-right">
               <span className="text-finance-gray text-sm">24h Change</span>
@@ -266,11 +276,15 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             </div>
             <div className="flex justify-between">
               <span className="text-finance-gray">Volume:</span>
-              <span className="font-bold text-finance-purple">{marketState.volume.toLocaleString()}</span>
+              <span className="font-bold text-finance-purple">
+                {marketState.volume.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-finance-gray">Volatility:</span>
-              <span className="font-bold text-finance-red">{(marketState.volatility * 100).toFixed(1)}%</span>
+              <span className="font-bold text-finance-red">
+                {(marketState.volatility * 100).toFixed(1)}%
+              </span>
             </div>
           </div>
         </div>
@@ -286,11 +300,13 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             <div className="text-finance-red text-sm font-semibold mb-2">SELL ORDERS</div>
             {Array.from({ length: 5 }, (_, i) => (
               <div key={`sell-${i}`} className="flex justify-between text-sm">
-                <span className="text-finance-red">${(marketState.currentPrice + (i + 1) * 0.5).toFixed(2)}</span>
+                <span className="text-finance-red">
+                  ${(marketState.currentPrice + (i + 1) * 0.5).toFixed(2)}
+                </span>
                 <span className="text-finance-gray">{Math.floor(Math.random() * 200) + 100}</span>
               </div>
             ))}
-            
+
             {/* Current Price */}
             <div className="border-t border-finance-border my-2 pt-2">
               <div className="flex justify-between font-bold text-finance-gold">
@@ -298,12 +314,14 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
                 <span>MARKET</span>
               </div>
             </div>
-            
+
             {/* Buy Orders */}
             <div className="text-finance-green text-sm font-semibold mb-2">BUY ORDERS</div>
             {Array.from({ length: 5 }, (_, i) => (
               <div key={`buy-${i}`} className="flex justify-between text-sm">
-                <span className="text-finance-green">${(marketState.currentPrice - (i + 1) * 0.5).toFixed(2)}</span>
+                <span className="text-finance-green">
+                  ${(marketState.currentPrice - (i + 1) * 0.5).toFixed(2)}
+                </span>
                 <span className="text-finance-gray">{Math.floor(Math.random() * 200) + 100}</span>
               </div>
             ))}
@@ -320,8 +338,12 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
               tradeHistory.map((trade, index) => (
                 <div key={index} className="flex justify-between items-center text-sm">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${trade.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'}`}></div>
-                    <span className={trade.side === 'buy' ? 'text-finance-green' : 'text-finance-red'}>
+                    <div
+                      className={`w-2 h-2 rounded-full ${trade.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'}`}
+                    ></div>
+                    <span
+                      className={trade.side === 'buy' ? 'text-finance-green' : 'text-finance-red'}
+                    >
                       {trade.side.toUpperCase()}
                     </span>
                   </div>
@@ -382,21 +404,26 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           <p className="text-finance-gray text-center py-8">No orders placed yet</p>
         ) : (
           <div className="space-y-2">
-            {userOrders.slice(-5).reverse().map(order => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between p-3 bg-finance-bg rounded-lg border border-finance-border"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    order.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'
-                  }`}></div>
-                  <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
-                  <span className="text-finance-gray">{order.quantity}</span>
+            {userOrders
+              .slice(-5)
+              .reverse()
+              .map((order) => (
+                <div
+                  key={order.id}
+                  className="flex items-center justify-between p-3 bg-finance-bg rounded-lg border border-finance-border"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        order.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'
+                      }`}
+                    ></div>
+                    <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
+                    <span className="text-finance-gray">{order.quantity}</span>
+                  </div>
+                  <span className="font-bold text-finance-gold">${order.price.toFixed(2)}</span>
                 </div>
-                <span className="font-bold text-finance-gold">${order.price.toFixed(2)}</span>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>
@@ -404,4 +431,4 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   );
 };
 
-export default MarketMakingGame; 
+export default MarketMakingGame;

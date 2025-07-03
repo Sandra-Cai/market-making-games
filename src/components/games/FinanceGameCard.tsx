@@ -10,7 +10,14 @@ interface FinanceGameCardProps {
   onClick?: () => void;
 }
 
-export default function FinanceGameCard({ icon, title, highScore, change, sparkData, onClick }: FinanceGameCardProps) {
+export default function FinanceGameCard({
+  icon,
+  title,
+  highScore,
+  change,
+  sparkData,
+  onClick,
+}: FinanceGameCardProps) {
   const isUp = change.startsWith('+');
   return (
     <div
@@ -27,15 +34,23 @@ export default function FinanceGameCard({ icon, title, highScore, change, sparkD
       </div>
       <div className="flex items-center justify-between mb-2">
         <span className="text-xl font-bold text-finance-gold">{highScore}</span>
-        <span className={`font-semibold ${isUp ? 'text-finance-green' : 'text-finance-red'}`}>{change}</span>
+        <span className={`font-semibold ${isUp ? 'text-finance-green' : 'text-finance-red'}`}>
+          {change}
+        </span>
       </div>
       <div className="w-full h-8">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={sparkData} margin={{ left: -10, right: 0, top: 0, bottom: 0 }}>
-            <Line type="monotone" dataKey="value" stroke={isUp ? '#00C176' : '#FF4B5C'} strokeWidth={2} dot={false} />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke={isUp ? '#00C176' : '#FF4B5C'}
+              strokeWidth={2}
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
   );
-} 
+}

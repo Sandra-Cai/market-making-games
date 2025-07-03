@@ -1,6 +1,16 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Brain, BarChart3, Settings as SettingsIcon, Award, Home, Bell, User, Search, DollarSign } from 'lucide-react';
+import {
+  Brain,
+  BarChart3,
+  Settings as SettingsIcon,
+  Award,
+  Home,
+  Bell,
+  User,
+  Search,
+  DollarSign,
+} from 'lucide-react';
 import TickerTape from './TickerTape';
 
 const navItems = [
@@ -19,10 +29,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <aside className="w-20 md:w-64 bg-finance-sidebar border-r border-finance-border flex flex-col items-center py-6">
         <div className="mb-8 flex flex-col items-center">
           <DollarSign className="w-10 h-10 text-finance-gold mb-2" />
-          <span className="text-lg font-bold text-finance-gold tracking-wide hidden md:block">MMG</span>
+          <span className="text-lg font-bold text-finance-gold tracking-wide hidden md:block">
+            MMG
+          </span>
         </div>
         <nav className="flex-1 w-full">
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <Link
               key={item.label}
               to={item.to}
@@ -73,10 +85,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         {/* Main content */}
-        <main className="flex-1 bg-finance-bg-light p-6 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 bg-finance-bg-light p-6 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
-} 
+}

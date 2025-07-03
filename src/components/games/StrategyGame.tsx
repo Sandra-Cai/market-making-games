@@ -20,83 +20,93 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
     {
       id: '1',
       title: 'Market Entry Strategy',
-      description: 'You are analyzing a volatile market with high uncertainty. The asset has shown 20% volatility and you have limited capital. What is your optimal entry strategy?',
+      description:
+        'You are analyzing a volatile market with high uncertainty. The asset has shown 20% volatility and you have limited capital. What is your optimal entry strategy?',
       options: [
         'Enter with 100% of capital immediately',
         'Enter with 50% now, 50% if price drops 10%',
         'Wait for a clear trend to emerge',
-        'Enter with 25% increments over 4 weeks'
+        'Enter with 25% increments over 4 weeks',
       ],
       correctAnswer: 3,
-      explanation: 'In high volatility markets, gradual entry reduces risk and allows you to average down if prices fall. This strategy balances opportunity with risk management.',
+      explanation:
+        'In high volatility markets, gradual entry reduces risk and allows you to average down if prices fall. This strategy balances opportunity with risk management.',
       points: 150,
       difficulty: 'medium',
-      category: 'decision-making'
+      category: 'decision-making',
     },
     {
       id: '2',
       title: 'Risk Management Decision',
-      description: 'Your portfolio is down 15% and you are approaching your stop-loss limit. Market conditions suggest a potential reversal. What do you do?',
+      description:
+        'Your portfolio is down 15% and you are approaching your stop-loss limit. Market conditions suggest a potential reversal. What do you do?',
       options: [
         'Hold and hope for recovery',
         'Cut losses immediately',
         'Reduce position size by 50%',
-        'Double down on the position'
+        'Double down on the position',
       ],
       correctAnswer: 2,
-      explanation: 'Reducing position size allows you to stay in the trade while managing risk. This is better than either cutting losses too early or taking excessive risk.',
+      explanation:
+        'Reducing position size allows you to stay in the trade while managing risk. This is better than either cutting losses too early or taking excessive risk.',
       points: 150,
       difficulty: 'medium',
-      category: 'decision-making'
+      category: 'decision-making',
     },
     {
       id: '3',
       title: 'Portfolio Allocation',
-      description: 'You have $100,000 to invest across three assets: low-risk bonds (2% return), medium-risk stocks (8% return), and high-risk crypto (25% return). How do you allocate?',
+      description:
+        'You have $100,000 to invest across three assets: low-risk bonds (2% return), medium-risk stocks (8% return), and high-risk crypto (25% return). How do you allocate?',
       options: [
         '100% in crypto for maximum returns',
         '50% bonds, 30% stocks, 20% crypto',
         '20% bonds, 60% stocks, 20% crypto',
-        '80% bonds, 15% stocks, 5% crypto'
+        '80% bonds, 15% stocks, 5% crypto',
       ],
       correctAnswer: 2,
-      explanation: 'This allocation provides good diversification with moderate risk. It captures growth potential while maintaining stability through bonds.',
+      explanation:
+        'This allocation provides good diversification with moderate risk. It captures growth potential while maintaining stability through bonds.',
       points: 150,
       difficulty: 'medium',
-      category: 'decision-making'
+      category: 'decision-making',
     },
     {
       id: '4',
       title: 'Information Asymmetry',
-      description: 'You have insider information that suggests a stock will move significantly. What is the ethical and legal approach?',
+      description:
+        'You have insider information that suggests a stock will move significantly. What is the ethical and legal approach?',
       options: [
         'Trade immediately to maximize profits',
         'Ignore the information completely',
         'Report it to compliance and avoid trading',
-        'Share it with colleagues for collective gain'
+        'Share it with colleagues for collective gain',
       ],
       correctAnswer: 2,
-      explanation: 'Trading on insider information is illegal and unethical. The correct approach is to report it and avoid any trading in the affected security.',
+      explanation:
+        'Trading on insider information is illegal and unethical. The correct approach is to report it and avoid any trading in the affected security.',
       points: 200,
       difficulty: 'medium',
-      category: 'decision-making'
+      category: 'decision-making',
     },
     {
       id: '5',
       title: 'Market Timing',
-      description: 'Economic indicators suggest a recession is likely within 6 months. Your portfolio is heavily weighted in cyclical stocks. What is your strategy?',
+      description:
+        'Economic indicators suggest a recession is likely within 6 months. Your portfolio is heavily weighted in cyclical stocks. What is your strategy?',
       options: [
         'Sell everything and go to cash',
         'Hold current positions',
         'Gradually shift to defensive sectors',
-        'Increase leverage to maximize returns'
+        'Increase leverage to maximize returns',
       ],
       correctAnswer: 2,
-      explanation: 'Gradual reallocation to defensive sectors reduces risk while maintaining market exposure. This is more prudent than either panic selling or ignoring the signals.',
+      explanation:
+        'Gradual reallocation to defensive sectors reduces risk while maintaining market exposure. This is more prudent than either panic selling or ignoring the signals.',
       points: 150,
       difficulty: 'medium',
-      category: 'decision-making'
-    }
+      category: 'decision-making',
+    },
   ];
 
   const getRandomScenario = () => {
@@ -106,21 +116,21 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
 
   const handleAnswerSelect = (answerIndex: number) => {
     if (selectedAnswer !== null) return;
-    
+
     setSelectedAnswer(answerIndex);
     setShowResult(true);
 
     const isCorrect = answerIndex === currentScenario?.correctAnswer;
     if (isCorrect) {
       const timeBonus = Math.max(0, timeLeft * 2);
-      setScore(prev => prev + currentScenario.points + timeBonus);
+      setScore((prev) => prev + currentScenario.points + timeBonus);
     }
 
     setTimeout(() => {
       setSelectedAnswer(null);
       setShowResult(false);
-      setScenariosAnswered(prev => prev + 1);
-      
+      setScenariosAnswered((prev) => prev + 1);
+
       if (scenariosAnswered + 1 >= 5) {
         endGame();
       } else {
@@ -142,14 +152,14 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
-      gamesPlayed: 1
+      gamesPlayed: 1,
     });
   }, [score, onStatsUpdate]);
 
   useEffect(() => {
     if (gameState === 'playing') {
       const interval = setInterval(() => {
-        setTimeLeft(prev => {
+        setTimeLeft((prev) => {
           if (prev <= 1) {
             endGame();
             return 0;
@@ -172,8 +182,8 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
         <Brain className="w-16 h-16 text-orange-400 mx-auto mb-6" />
         <h2 className="text-3xl font-bold mb-4">Strategy Games</h2>
         <p className="text-gray-300 mb-6 max-w-md mx-auto">
-          Develop your strategic decision-making abilities with real-world scenarios.
-          Practice risk management, portfolio allocation, and ethical decision-making.
+          Develop your strategic decision-making abilities with real-world scenarios. Practice risk
+          management, portfolio allocation, and ethical decision-making.
         </p>
         <button onClick={startGame} className="btn-primary">
           Start Strategy Training
@@ -219,10 +229,10 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="progress-bar">
-          <div 
-            className="progress-fill" 
+          <div
+            className="progress-fill"
             style={{ width: `${(scenariosAnswered / 5) * 100}%` }}
           ></div>
         </div>
@@ -239,7 +249,7 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
           <h3 className="text-2xl font-bold mb-4">{currentScenario.title}</h3>
           <p className="text-gray-300 text-lg leading-relaxed">{currentScenario.description}</p>
         </div>
-        
+
         <div className="space-y-3">
           {currentScenario.options.map((option, index) => (
             <motion.button
@@ -288,4 +298,4 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
   );
 };
 
-export default StrategyGame; 
+export default StrategyGame;

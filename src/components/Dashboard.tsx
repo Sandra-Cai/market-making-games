@@ -3,7 +3,15 @@ import { motion } from 'framer-motion';
 import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp, Newspaper } from 'lucide-react';
 import { Game } from '../types/game';
 import { useGameStore } from '../store/gameStore';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import FinanceGameCard from './games/FinanceGameCard';
 
@@ -39,31 +47,58 @@ const newsFeed = [
 
 const gameSparkData = {
   'market-making': [
-    { value: 800 }, { value: 850 }, { value: 900 }, { value: 950 }, { value: 1000 }, { value: 1050 }, { value: 1100 }
+    { value: 800 },
+    { value: 850 },
+    { value: 900 },
+    { value: 950 },
+    { value: 1000 },
+    { value: 1050 },
+    { value: 1100 },
   ],
-  'probability': [
-    { value: 600 }, { value: 650 }, { value: 700 }, { value: 750 }, { value: 800 }, { value: 850 }, { value: 900 }
+  probability: [
+    { value: 600 },
+    { value: 650 },
+    { value: 700 },
+    { value: 750 },
+    { value: 800 },
+    { value: 850 },
+    { value: 900 },
   ],
   'mental-math': [
-    { value: 1000 }, { value: 1050 }, { value: 1100 }, { value: 1150 }, { value: 1200 }, { value: 1250 }, { value: 1300 }
+    { value: 1000 },
+    { value: 1050 },
+    { value: 1100 },
+    { value: 1150 },
+    { value: 1200 },
+    { value: 1250 },
+    { value: 1300 },
   ],
-  'strategy': [
-    { value: 700 }, { value: 750 }, { value: 800 }, { value: 850 }, { value: 900 }, { value: 950 }, { value: 1000 }
-  ]
+  strategy: [
+    { value: 700 },
+    { value: 750 },
+    { value: 800 },
+    { value: 850 },
+    { value: 900 },
+    { value: 950 },
+    { value: 1000 },
+  ],
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
-  const gameHistory = useGameStore(s => s.gameHistory);
-  const achievements = useGameStore(s => s.achievements);
+  const gameHistory = useGameStore((s) => s.gameHistory);
+  const achievements = useGameStore((s) => s.achievements);
   const navigate = useNavigate();
 
   // Prepare data for the performance chart
-  const chartData = gameHistory.slice().reverse().map((session, idx) => ({
-    name: `#${gameHistory.length - idx}`,
-    score: session.score,
-    game: session.gameType,
-    date: new Date(session.timestamp).toLocaleDateString()
-  }));
+  const chartData = gameHistory
+    .slice()
+    .reverse()
+    .map((session, idx) => ({
+      name: `#${gameHistory.length - idx}`,
+      score: session.score,
+      game: session.gameType,
+      date: new Date(session.timestamp).toLocaleDateString(),
+    }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -81,7 +116,8 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             </h1>
           </div>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Your mental gym for quantitative careers. Train your brain with interactive exercises and challenges.
+            Your mental gym for quantitative careers. Train your brain with interactive exercises
+            and challenges.
           </p>
         </motion.div>
 
@@ -138,8 +174,16 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis dataKey="name" tick={{ fill: '#94a3b8' }} />
                   <YAxis tick={{ fill: '#94a3b8' }} />
-                  <Tooltip contentStyle={{ background: '#1e293b', border: 'none', color: '#fff' }} />
-                  <Line type="monotone" dataKey="score" stroke="#60a5fa" strokeWidth={3} dot={{ r: 4 }} />
+                  <Tooltip
+                    contentStyle={{ background: '#1e293b', border: 'none', color: '#fff' }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="score"
+                    stroke="#60a5fa"
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
@@ -158,12 +202,15 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             </h2>
             {achievements.length > 0 ? (
               <div className="flex flex-wrap gap-4">
-                {achievements.slice(-6).reverse().map(a => (
-                  <div key={a.id} className="flex flex-col items-center p-2">
-                    <span className="text-3xl mb-1">{a.icon}</span>
-                    <span className="text-sm font-semibold text-white">{a.title}</span>
-                  </div>
-                ))}
+                {achievements
+                  .slice(-6)
+                  .reverse()
+                  .map((a) => (
+                    <div key={a.id} className="flex flex-col items-center p-2">
+                      <span className="text-3xl mb-1">{a.icon}</span>
+                      <span className="text-sm font-semibold text-white">{a.title}</span>
+                    </div>
+                  ))}
               </div>
             ) : (
               <div className="text-gray-400 text-center py-8">No achievements yet</div>
@@ -190,12 +237,16 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {gameHistory.slice(0, 5).map(session => (
+                  {gameHistory.slice(0, 5).map((session) => (
                     <tr key={session.id} className="hover:bg-white/10 transition">
-                      <td className="py-2 px-4 font-semibold capitalize">{session.gameType.replace('-', ' ')}</td>
+                      <td className="py-2 px-4 font-semibold capitalize">
+                        {session.gameType.replace('-', ' ')}
+                      </td>
                       <td className="py-2 px-4">{session.score}</td>
                       <td className="py-2 px-4">{session.level}</td>
-                      <td className="py-2 px-4">{new Date(session.timestamp).toLocaleDateString()}</td>
+                      <td className="py-2 px-4">
+                        {new Date(session.timestamp).toLocaleDateString()}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -215,7 +266,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           {games.map((game) => (
             <FinanceGameCard
               key={game.id}
-              icon={React.createElement(game.icon, { className: "w-6 h-6" })}
+              icon={React.createElement(game.icon, { className: 'w-6 h-6' })}
               title={game.title}
               highScore={game.highScore || 0}
               change={game.highScore ? '+5.2%' : '0%'}
@@ -235,7 +286,13 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             <div className="text-2xl font-bold text-finance-gold mb-1">{userStats.totalScore}</div>
             <ResponsiveContainer width="100%" height={40}>
               <LineChart data={dummyHistory} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
-                <Line type="monotone" dataKey="score" stroke="#FFD700" strokeWidth={2} dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#FFD700"
+                  strokeWidth={2}
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -244,7 +301,9 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
               <Award className="w-5 h-5 text-finance-purple" />
               <span className="text-finance-gray text-xs">Current Streak</span>
             </div>
-            <div className="text-2xl font-bold text-finance-green mb-1">{userStats.currentStreak}</div>
+            <div className="text-2xl font-bold text-finance-green mb-1">
+              {userStats.currentStreak}
+            </div>
             <div className="text-xs text-finance-gray">Best: {userStats.bestScore}</div>
           </div>
           <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
@@ -275,7 +334,11 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
                 <tr key={entry.name} className={idx === 2 ? 'bg-finance-bg-light' : ''}>
                   <td className="py-1 font-semibold text-white">{entry.name}</td>
                   <td className="py-1 text-right text-finance-gold font-bold">{entry.score}</td>
-                  <td className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-finance-green' : 'text-finance-red'}`}>{entry.change}</td>
+                  <td
+                    className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-finance-green' : 'text-finance-red'}`}
+                  >
+                    {entry.change}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -289,7 +352,10 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           </div>
           <ul>
             {newsFeed.map((item, idx) => (
-              <li key={idx} className="flex justify-between py-2 border-b border-finance-border last:border-0">
+              <li
+                key={idx}
+                className="flex justify-between py-2 border-b border-finance-border last:border-0"
+              >
                 <span className="text-white font-medium">{item.title}</span>
                 <span className="text-finance-gray text-xs">{item.time}</span>
               </li>
@@ -312,4 +378,4 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

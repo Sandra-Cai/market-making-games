@@ -20,9 +20,9 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
   const generateProblem = (): MathProblem => {
     const operations = ['+', '-', '*', '/'];
     const operation = operations[Math.floor(Math.random() * operations.length)];
-    
+
     let num1, num2, answer;
-    
+
     switch (operation) {
       case '+':
         num1 = Math.floor(Math.random() * 100) + 1;
@@ -55,7 +55,7 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
       answer,
       timeLimit: 10,
       difficulty: 'medium',
-      category: 'arithmetic'
+      category: 'arithmetic',
     };
   };
 
@@ -63,14 +63,14 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
     if (!currentProblem || !userAnswer.trim()) return;
 
     const isCorrect = parseInt(userAnswer) === currentProblem.answer;
-    
+
     if (isCorrect) {
       const timeBonus = Math.max(0, timeLeft * 10);
       const streakBonus = streak * 5;
       const totalPoints = 100 + timeBonus + streakBonus;
-      
-      setScore(prev => prev + totalPoints);
-      setStreak(prev => prev + 1);
+
+      setScore((prev) => prev + totalPoints);
+      setStreak((prev) => prev + 1);
     } else {
       setStreak(0);
     }
@@ -80,8 +80,8 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
 
     setTimeout(() => {
       setShowResult(false);
-      setProblemsAnswered(prev => prev + 1);
-      
+      setProblemsAnswered((prev) => prev + 1);
+
       if (problemsAnswered + 1 >= 10) {
         endGame();
       } else {
@@ -110,24 +110,24 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
     setGameState('finished');
     onStatsUpdate({
       totalScore: score,
-      gamesPlayed: 1
+      gamesPlayed: 1,
     });
   }, [score, onStatsUpdate]);
 
   useEffect(() => {
     if (gameState === 'playing') {
       const interval = setInterval(() => {
-        setTimeLeft(prev => {
+        setTimeLeft((prev) => {
           if (prev <= 1) {
             // Time's up - count as wrong answer
             setStreak(0);
             setShowResult(true);
             setUserAnswer('');
-            
+
             setTimeout(() => {
               setShowResult(false);
-              setProblemsAnswered(prev => prev + 1);
-              
+              setProblemsAnswered((prev) => prev + 1);
+
               if (problemsAnswered + 1 >= 10) {
                 endGame();
               } else {
@@ -135,7 +135,7 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
                 setTimeLeft(10);
               }
             }, 1500);
-            
+
             return 10;
           }
           return prev - 1;
@@ -156,8 +156,8 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
         <Zap className="w-16 h-16 text-green-400 mx-auto mb-6" />
         <h2 className="text-3xl font-bold mb-4">Mental Math Drills</h2>
         <p className="text-gray-300 mb-6 max-w-md mx-auto">
-          Speed up your quantitative thinking with fast-paced arithmetic challenges.
-          Solve problems quickly to earn bonus points and build your streak!
+          Speed up your quantitative thinking with fast-paced arithmetic challenges. Solve problems
+          quickly to earn bonus points and build your streak!
         </p>
         <button onClick={startGame} className="btn-primary">
           Start Drills
@@ -203,17 +203,17 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="progress-bar flex-1 mr-4">
-            <div 
-              className="progress-fill" 
+            <div
+              className="progress-fill"
               style={{ width: `${(problemsAnswered / 10) * 100}%` }}
             ></div>
           </div>
           <span className="text-sm text-gray-400">Problem {problemsAnswered + 1}/10</span>
         </div>
-        
+
         {streak > 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -228,7 +228,7 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
       {/* Problem */}
       <div className="glass-card p-8 text-center">
         <h3 className="text-4xl font-bold mb-8">{currentProblem.question}</h3>
-        
+
         <div className="max-w-xs mx-auto">
           <input
             type="number"
@@ -240,7 +240,7 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
             placeholder="?"
             autoFocus
           />
-          
+
           <button
             onClick={handleSubmit}
             disabled={showResult || !userAnswer.trim()}
@@ -275,4 +275,4 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
   );
 };
 
-export default MentalMathGame; 
+export default MentalMathGame;

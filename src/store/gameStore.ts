@@ -9,18 +9,18 @@ interface GameState {
   gameHistory: GameSession[];
   currentStreak: number;
   bestStreak: number;
-  
+
   // Game state
   currentGame: GameType | null;
   gameInProgress: boolean;
   currentScore: number;
   gameStartTime: number | null;
-  
+
   // UI state
   theme: 'dark' | 'light';
   soundEnabled: boolean;
   notificationsEnabled: boolean;
-  
+
   // Actions
   updateStats: (stats: Partial<GameStats>) => void;
   addAchievement: (achievement: Achievement) => void;
@@ -47,7 +47,7 @@ const initialStats: GameStats = {
   marketMakingScore: 0,
   probabilityScore: 0,
   mentalMathScore: 0,
-  strategyScore: 0
+  strategyScore: 0,
 };
 
 export const useGameStore = create<GameState>()(
@@ -71,26 +71,26 @@ export const useGameStore = create<GameState>()(
       updateStats: (stats) => {
         set((state) => {
           const newStats = { ...state.userStats, ...stats };
-          
+
           // Calculate derived stats
           if (newStats.gamesPlayed > 0) {
             newStats.averageScore = Math.round(newStats.totalScore / newStats.gamesPlayed);
             newStats.winRate = newStats.gamesWon / newStats.gamesPlayed;
           }
-          
+
           // Level progression
           const newLevel = Math.floor(newStats.totalScore / 1000) + 1;
           if (newLevel > newStats.level) {
             newStats.level = newLevel;
           }
-          
+
           return { userStats: newStats };
         });
       },
 
       addAchievement: (achievement) => {
         set((state) => {
-          const exists = state.achievements.some(a => a.id === achievement.id);
+          const exists = state.achievements.some((a) => a.id === achievement.id);
           if (!exists) {
             return { achievements: [...state.achievements, achievement] };
           }
@@ -103,21 +103,21 @@ export const useGameStore = create<GameState>()(
           currentGame: gameType,
           gameInProgress: true,
           currentScore: 0,
-          gameStartTime: Date.now()
+          gameStartTime: Date.now(),
         });
       },
 
       endGame: (finalScore) => {
         const state = get();
         const gameDuration = state.gameStartTime ? Date.now() - state.gameStartTime : 0;
-        
+
         // Update stats
         const newStats = {
           ...state.userStats,
           totalScore: state.userStats.totalScore + finalScore,
           gamesPlayed: state.userStats.gamesPlayed + 1,
           totalPlayTime: state.userStats.totalPlayTime + gameDuration,
-          gamesWon: state.userStats.gamesWon + (finalScore > 0 ? 1 : 0)
+          gamesWon: state.userStats.gamesWon + (finalScore > 0 ? 1 : 0),
         };
 
         // Update game-specific scores
@@ -141,7 +141,7 @@ export const useGameStore = create<GameState>()(
           score: finalScore,
           duration: gameDuration,
           timestamp: Date.now(),
-          level: state.userStats.level
+          level: state.userStats.level,
         };
 
         set((state) => ({
@@ -152,7 +152,7 @@ export const useGameStore = create<GameState>()(
           currentGame: null,
           gameInProgress: false,
           currentScore: 0,
-          gameStartTime: null
+          gameStartTime: null,
         }));
 
         // Check for achievements
@@ -161,7 +161,7 @@ export const useGameStore = create<GameState>()(
 
       addGameSession: (session) => {
         set((state) => ({
-          gameHistory: [session, ...state.gameHistory.slice(0, 49)]
+          gameHistory: [session, ...state.gameHistory.slice(0, 49)],
         }));
       },
 
@@ -183,7 +183,7 @@ export const useGameStore = create<GameState>()(
           achievements: [],
           gameHistory: [],
           currentStreak: 0,
-          bestStreak: 0
+          bestStreak: 0,
         });
       },
 
@@ -198,7 +198,7 @@ export const useGameStore = create<GameState>()(
             title: 'First Victory',
             description: 'Win your first game',
             icon: '🏆',
-            unlockedAt: Date.now()
+            unlockedAt: Date.now(),
           });
         }
 
@@ -209,7 +209,7 @@ export const useGameStore = create<GameState>()(
             title: 'Hot Streak',
             description: 'Win 5 games in a row',
             icon: '🔥',
-            unlockedAt: Date.now()
+            unlockedAt: Date.now(),
           });
         }
 
@@ -220,7 +220,7 @@ export const useGameStore = create<GameState>()(
             title: 'Score Master',
             description: 'Reach 1000 total points',
             icon: '⭐',
-            unlockedAt: Date.now()
+            unlockedAt: Date.now(),
           });
         }
 
@@ -231,12 +231,12 @@ export const useGameStore = create<GameState>()(
             title: 'Level Up',
             description: 'Reach level 5',
             icon: '📈',
-            unlockedAt: Date.now()
+            unlockedAt: Date.now(),
           });
         }
 
-        newAchievements.forEach(achievement => get().addAchievement(achievement));
-      }
+        newAchievements.forEach((achievement) => get().addAchievement(achievement));
+      },
     }),
     {
       name: 'market-making-games-storage',
@@ -248,8 +248,8 @@ export const useGameStore = create<GameState>()(
         bestStreak: state.bestStreak,
         theme: state.theme,
         soundEnabled: state.soundEnabled,
-        notificationsEnabled: state.notificationsEnabled
-      })
-    }
-  )
-); 
+        notificationsEnabled: state.notificationsEnabled,
+      }),
+    },
+  ),
+);

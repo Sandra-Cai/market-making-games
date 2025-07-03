@@ -12,9 +12,15 @@ import { Game } from './types/game';
 import { Toaster, toast } from 'react-hot-toast';
 
 // Placeholder pages
-const Achievements = () => <div className="container mx-auto p-8 text-center text-2xl">Achievements (Coming Soon)</div>;
-const Leaderboard = () => <div className="container mx-auto p-8 text-center text-2xl">Leaderboard (Coming Soon)</div>;
-const Settings = () => <div className="container mx-auto p-8 text-center text-2xl">Settings (Coming Soon)</div>;
+const Achievements = () => (
+  <div className="container mx-auto p-8 text-center text-2xl">Achievements (Coming Soon)</div>
+);
+const Leaderboard = () => (
+  <div className="container mx-auto p-8 text-center text-2xl">Leaderboard (Coming Soon)</div>
+);
+const Settings = () => (
+  <div className="container mx-auto p-8 text-center text-2xl">Settings (Coming Soon)</div>
+);
 
 const games: Game[] = [
   {
@@ -24,7 +30,7 @@ const games: Game[] = [
     icon: TrendingUp,
     difficulty: 'Intermediate',
     category: 'Trading',
-    color: 'from-blue-500 to-cyan-500'
+    color: 'from-blue-500 to-cyan-500',
   },
   {
     id: 'probability',
@@ -33,7 +39,7 @@ const games: Game[] = [
     icon: Target,
     difficulty: 'Beginner',
     category: 'Mathematics',
-    color: 'from-purple-500 to-pink-500'
+    color: 'from-purple-500 to-pink-500',
   },
   {
     id: 'mental-math',
@@ -42,7 +48,7 @@ const games: Game[] = [
     icon: Zap,
     difficulty: 'Beginner',
     category: 'Mathematics',
-    color: 'from-green-500 to-emerald-500'
+    color: 'from-green-500 to-emerald-500',
   },
   {
     id: 'strategy',
@@ -51,14 +57,14 @@ const games: Game[] = [
     icon: Brain,
     difficulty: 'Expert',
     category: 'Strategy',
-    color: 'from-orange-500 to-red-500'
-  }
+    color: 'from-orange-500 to-red-500',
+  },
 ];
 
 const App: React.FC = () => {
-  const userStats = useGameStore(state => state.userStats);
-  const achievements = useGameStore(state => state.achievements);
-  const currentStreak = useGameStore(state => state.currentStreak);
+  const userStats = useGameStore((state) => state.userStats);
+  const achievements = useGameStore((state) => state.achievements);
+  const currentStreak = useGameStore((state) => state.currentStreak);
   const prevAchievements = useRef(achievements);
   const prevLevel = useRef(userStats.level);
   const prevStreak = useRef(currentStreak);
@@ -98,7 +104,10 @@ const App: React.FC = () => {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/settings" element={<Settings />} />
           {/* Game routes */}
-          <Route path="/game/market-making" element={<MarketMakingGame onStatsUpdate={() => {}} />} />
+          <Route
+            path="/game/market-making"
+            element={<MarketMakingGame onStatsUpdate={() => {}} />}
+          />
           <Route path="/game/probability" element={<ProbabilityGame onStatsUpdate={() => {}} />} />
           <Route path="/game/mental-math" element={<MentalMathGame onStatsUpdate={() => {}} />} />
           <Route path="/game/strategy" element={<StrategyGame onStatsUpdate={() => {}} />} />
@@ -109,4 +118,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;
