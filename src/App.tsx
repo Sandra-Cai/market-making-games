@@ -11,6 +11,7 @@ import { TrendingUp, Target, Zap, Brain } from 'lucide-react';
 import { Game } from './types/game';
 import { Toaster, toast } from 'react-hot-toast';
 import LoadingSpinner from './components/LoadingSpinner';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Placeholder pages
 const Achievements = () => (
@@ -107,23 +108,22 @@ const App: React.FC = () => {
           <LoadingSpinner />
         </div>
       )}
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard games={games} userStats={userStats} />} />
-          <Route path="/achievements" element={<Achievements />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/settings" element={<Settings />} />
-          {/* Game routes */}
-          <Route
-            path="/game/market-making"
-            element={<MarketMakingGame onStatsUpdate={() => {}} />}
-          />
-          <Route path="/game/probability" element={<ProbabilityGame onStatsUpdate={() => {}} />} />
-          <Route path="/game/mental-math" element={<MentalMathGame onStatsUpdate={() => {}} />} />
-          <Route path="/game/strategy" element={<StrategyGame onStatsUpdate={() => {}} />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
+      <ErrorBoundary>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard games={games} userStats={userStats} />} />
+            <Route path="/achievements" element={<Achievements />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/settings" element={<Settings />} />
+            {/* Game routes */}
+            <Route path="/game/market-making" element={<MarketMakingGame onStatsUpdate={() => {}} />} />
+            <Route path="/game/probability" element={<ProbabilityGame onStatsUpdate={() => {}} />} />
+            <Route path="/game/mental-math" element={<MentalMathGame onStatsUpdate={() => {}} />} />
+            <Route path="/game/strategy" element={<StrategyGame onStatsUpdate={() => {}} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Layout>
+      </ErrorBoundary>
     </Router>
   );
 };
