@@ -109,9 +109,10 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
+          role="banner"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Brain className="w-12 h-12 text-primary-400" />
+            <Brain className="w-12 h-12 text-primary-400" aria-hidden="true" />
             <h1 className="text-5xl font-bold bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent">
               Market Making Games
             </h1>
@@ -127,31 +128,32 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          aria-label="User statistics"
         >
           <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Trophy className="w-6 h-6 text-yellow-400" />
+              <Trophy className="w-6 h-6 text-yellow-400" aria-hidden="true" />
               <span className="text-2xl font-bold">{userStats.totalScore}</span>
             </div>
             <p className="text-gray-400">Total Score</p>
           </div>
           <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <BarChart3 className="w-6 h-6 text-primary-400" />
+              <BarChart3 className="w-6 h-6 text-primary-400" aria-hidden="true" />
               <span className="text-2xl font-bold">{userStats.gamesPlayed}</span>
             </div>
             <p className="text-gray-400">Games Played</p>
           </div>
           <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="w-6 h-6 text-success-400" />
+              <Star className="w-6 h-6 text-success-400" aria-hidden="true" />
               <span className="text-2xl font-bold">{(userStats.winRate * 100).toFixed(0)}%</span>
             </div>
             <p className="text-gray-400">Win Rate</p>
           </div>
           <div className="stat-card">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Flame className="w-6 h-6 text-orange-400" />
+              <Flame className="w-6 h-6 text-orange-400" aria-hidden="true" />
               <span className="text-2xl font-bold">{userStats.currentStreak}</span>
             </div>
             <p className="text-gray-400">Current Streak</p>
@@ -165,9 +167,11 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="glass-card p-6"
+            role="img"
+            aria-label="Performance chart showing recent game scores"
           >
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <BarChart3 className="w-6 h-6 text-primary-400" /> Performance
+              <BarChart3 className="w-6 h-6 text-primary-400" aria-hidden="true" /> Performance
             </h2>
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
