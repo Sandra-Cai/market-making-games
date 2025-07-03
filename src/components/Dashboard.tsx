@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp, Newspaper } from 'lucide-react';
 import { Game } from '../types/game';
+import { GameStats } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import {
   LineChart,
@@ -17,7 +18,7 @@ import FinanceGameCard from './games/FinanceGameCard';
 
 interface DashboardProps {
   games: Game[];
-  userStats: any;
+  userStats: GameStats;
 }
 
 const dummyHistory = [
