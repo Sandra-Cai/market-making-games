@@ -215,40 +215,36 @@ const StrategyGame: React.FC<StrategyGameProps> = ({ onStatsUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Game Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Strategy Training</h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-orange-400" />
-              <span className="text-xl font-bold">{score}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-orange-400" />
-              <span className="text-xl font-bold">{timeLeft}s</span>
-            </div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">Strategy Training</h2>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-orange-400" />
+            <span className="text-xl font-bold">{score}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-orange-400" />
+            <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
         </div>
-
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${(scenariosAnswered / 5) * 100}%` }}
-          ></div>
-        </div>
-        <p className="text-gray-400 mt-2">Scenario {scenariosAnswered + 1} of 5</p>
       </div>
 
+      <div className="progress-bar">
+        <div
+          className="progress-fill"
+          style={{ width: `${(scenariosAnswered / 5) * 100}%` }}
+        ></div>
+      </div>
+      <p className="text-gray-400 mt-2">Scenario {scenariosAnswered + 1} of 5</p>
+
       {/* Scenario */}
-      <div className="glass-card p-8">
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Lightbulb className="w-5 h-5 text-orange-400" />
-            <span className="text-sm font-semibold text-orange-400">STRATEGIC DECISION</span>
-          </div>
-          <h3 className="text-2xl font-bold mb-4">{currentScenario.title}</h3>
-          <p className="text-gray-300 text-lg leading-relaxed">{currentScenario.description}</p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Lightbulb className="w-5 h-5 text-orange-400" />
+          <span className="text-sm font-semibold text-orange-400">STRATEGIC DECISION</span>
         </div>
+        <h3 className="text-2xl font-bold mb-4">{currentScenario.title}</h3>
+        <p className="text-gray-300 text-lg leading-relaxed">{currentScenario.description}</p>
 
         <div className="space-y-3">
           {currentScenario.options.map((option, index) => (

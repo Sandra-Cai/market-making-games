@@ -173,46 +173,33 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Game Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Probability Challenge</h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-purple-400" />
-              <span className="text-xl font-bold">{score}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-orange-400" />
-              <span className="text-xl font-bold">{timeLeft}s</span>
-            </div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">Probability Challenge</h2>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-purple-400" />
+            <span className="text-xl font-bold">{score}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-orange-400" />
+            <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
         </div>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${(problemsAnswered / 5) * 100}%` }}
-          ></div>
-        </div>
-        <p className="text-gray-400 mt-2">Problem {problemsAnswered + 1} of 5</p>
       </div>
+      <div className="progress-bar">
+        <div
+          className="progress-fill"
+          style={{ width: `${(problemsAnswered / 5) * 100}%` }}
+        ></div>
+      </div>
+      <p className="text-gray-400 mt-2">Problem {problemsAnswered + 1} of 5</p>
 
       {/* Problem */}
-      <div className="glass-card p-8">
-        <div className="mb-6">
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              currentProblem.difficulty === 'easy'
-                ? 'bg-success-500/20 text-success-400'
-                : currentProblem.difficulty === 'medium'
-                  ? 'bg-primary-500/20 text-primary-400'
-                  : 'bg-danger-500/20 text-danger-400'
-            }`}
-          >
-            {currentProblem.difficulty.toUpperCase()}
-          </span>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <span className="font-bold">{String.fromCharCode(65 + problemsAnswered)}.</span>
+          <span className="text-xl font-bold">{currentProblem.question}</span>
         </div>
-
-        <h3 className="text-xl font-bold mb-6">{currentProblem.question}</h3>
 
         <div className="space-y-3">
           {currentProblem.options.map((option, index) => (

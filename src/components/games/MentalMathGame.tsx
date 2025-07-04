@@ -189,44 +189,42 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Game Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Mental Math</h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-green-400" />
-              <span className="text-xl font-bold">{score}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-orange-400" />
-              <span className="text-xl font-bold">{timeLeft}s</span>
-            </div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">Mental Math</h2>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-green-400" />
+            <span className="text-xl font-bold">{score}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-orange-400" />
+            <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
         </div>
-
-        <div className="flex items-center justify-between">
-          <div className="progress-bar flex-1 mr-4">
-            <div
-              className="progress-fill"
-              style={{ width: `${(problemsAnswered / 10) * 100}%` }}
-            ></div>
-          </div>
-          <span className="text-sm text-gray-400">Problem {problemsAnswered + 1}/10</span>
-        </div>
-
-        {streak > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mt-2 text-center"
-          >
-            <span className="text-orange-400 font-bold">🔥 Streak: {streak}</span>
-          </motion.div>
-        )}
       </div>
 
+      <div className="flex items-center justify-between">
+        <div className="progress-bar flex-1 mr-4">
+          <div
+            className="progress-fill"
+            style={{ width: `${(problemsAnswered / 10) * 100}%` }}
+          ></div>
+        </div>
+        <span className="text-sm text-gray-400">Problem {problemsAnswered + 1}/10</span>
+      </div>
+
+      {streak > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mt-2 text-center"
+        >
+          <span className="text-orange-400 font-bold">🔥 Streak: {streak}</span>
+        </motion.div>
+      )}
+
       {/* Problem */}
-      <div className="glass-card p-8 text-center">
+      <div className="flex items-center justify-between">
         <h3 className="text-4xl font-bold mb-8">{currentProblem.question}</h3>
 
         <div className="max-w-xs mx-auto">

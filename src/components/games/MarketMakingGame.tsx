@@ -200,31 +200,29 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   return (
     <div className="space-y-6">
       {/* Game Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Market Making</h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary-400" />
-              <span className="text-xl font-bold">{score}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-orange-400" />
-              <span className="text-xl font-bold">{timeLeft}s</span>
-            </div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">Market Making</h2>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-primary-400" />
+            <span className="text-xl font-bold">{score}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-orange-400" />
+            <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
         </div>
-
-        {gameMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-2 px-4 bg-primary-500/20 rounded-lg text-primary-300"
-          >
-            {gameMessage}
-          </motion.div>
-        )}
       </div>
+
+      {gameMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-2 px-4 bg-primary-500/20 rounded-lg text-primary-300"
+        >
+          {gameMessage}
+        </motion.div>
+      )}
 
       {/* Market Display */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
