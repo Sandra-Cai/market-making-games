@@ -137,13 +137,13 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
         animate={{ opacity: 1 }}
         className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
-        <Target className="w-16 h-16 text-red-700 mx-auto mb-8" />
-        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Probability Challenges</h2>
+        <Target className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
+        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-[#b01c2e]">Probability Challenges</h2>
         <p className="text-2xl text-gray-700 mb-12 max-w-xl mx-auto font-light font-sans">
           Test your understanding of probability and risk. Solve probability problems under time
           pressure to develop your quantitative intuition.
         </p>
-        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-red-700 text-red-700 font-bold text-lg hover:bg-red-700 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-red-700">
+        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-[#b01c2e] text-[#b01c2e] font-bold text-lg hover:bg-[#b01c2e] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">
           Start Challenge
         </button>
       </motion.div>
@@ -157,11 +157,11 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
         animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
-        <CheckCircle className="w-16 h-16 text-red-700 mx-auto mb-8" />
-        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Challenge Complete!</h2>
-        <div className="text-6xl font-bold text-red-700 mb-8 font-serif">{score}</div>
+        <CheckCircle className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
+        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-[#b01c2e]">Challenge Complete!</h2>
+        <div className="text-6xl font-bold text-[#b01c2e] mb-8 font-serif">{score}</div>
         <p className="text-2xl text-gray-700 mb-12 font-light font-sans">Final Score</p>
-        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-red-700 text-red-700 font-bold text-lg hover:bg-red-700 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-red-700">
+        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-[#b01c2e] text-[#b01c2e] font-bold text-lg hover:bg-[#b01c2e] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">
           Try Again
         </button>
       </motion.div>
@@ -177,11 +177,11 @@ const ProbabilityGame: React.FC<ProbabilityGameProps> = ({ onStatsUpdate }) => {
         <h2 className="text-2xl font-bold">Probability Challenge</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-purple-400" />
+            <Target className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{score}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-orange-400" />
+            <Clock className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
         </div>

@@ -166,13 +166,13 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         animate={{ opacity: 1 }}
         className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
-        <TrendingUp className="w-16 h-16 text-red-700 mx-auto mb-8" />
+        <TrendingUp className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
         <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Market Making Challenge</h2>
         <p className="text-2xl text-gray-700 mb-12 max-w-xl mx-auto font-light font-sans">
           Practice market making by placing buy and sell orders. Your goal is to maintain a balanced
           book while profiting from the spread. Watch the market move and react quickly!
         </p>
-        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-red-700 text-red-700 font-bold text-lg hover:bg-red-700 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-red-700">
+        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-[#b01c2e] text-[#b01c2e] font-bold text-lg hover:bg-[#b01c2e] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">
           Start Game
         </button>
       </motion.div>
@@ -186,11 +186,11 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
-        <CheckCircle className="w-16 h-16 text-red-700 mx-auto mb-8" />
+        <CheckCircle className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
         <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Game Complete!</h2>
-        <div className="text-6xl font-bold text-red-700 mb-8 font-serif">{score}</div>
+        <div className="text-6xl font-bold text-[#b01c2e] mb-8 font-serif">{score}</div>
         <p className="text-2xl text-gray-700 mb-12 font-light font-sans">Final Score</p>
-        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-red-700 text-red-700 font-bold text-lg hover:bg-red-700 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-red-700">
+        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-[#b01c2e] text-[#b01c2e] font-bold text-lg hover:bg-[#b01c2e] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">
           Play Again
         </button>
       </motion.div>
@@ -204,11 +204,11 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         <h2 className="text-2xl font-bold">Market Making</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary-400" />
+            <Target className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{score}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-orange-400" />
+            <Clock className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
         </div>
@@ -218,7 +218,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-2 px-4 bg-primary-500/20 rounded-lg text-primary-300"
+          className="text-center py-2 px-4 bg-[#b01c2e]/20 rounded-lg text-[#b01c2e]"
         >
           {gameMessage}
         </motion.div>
@@ -227,8 +227,8 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       {/* Market Display */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Price Chart */}
-        <div className="lg:col-span-2 bg-finance-card rounded-xl p-6 shadow-md">
-          <h3 className="text-xl font-bold mb-4 text-finance-gold">Live Price Chart</h3>
+        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Live Price Chart</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={priceHistory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -252,35 +252,35 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           </div>
           <div className="flex justify-between items-center mt-4">
             <div>
-              <span className="text-finance-gray text-sm">Current Price</span>
-              <div className="text-2xl font-bold text-finance-gold">
+              <span className="text-gray-600 text-sm">Current Price</span>
+              <div className="text-2xl font-bold text-[#b01c2e]">
                 ${marketState.currentPrice.toFixed(2)}
               </div>
             </div>
             <div className="text-right">
-              <span className="text-finance-gray text-sm">24h Change</span>
-              <div className="text-lg font-bold text-finance-green">+2.3%</div>
+              <span className="text-gray-600 text-sm">24h Change</span>
+              <div className="text-lg font-bold text-[#b01c2e]">+2.3%</div>
             </div>
           </div>
         </div>
 
         {/* Market Stats */}
-        <div className="bg-finance-card rounded-xl p-6 shadow-md">
-          <h3 className="text-xl font-bold mb-4 text-finance-gold">Market Stats</h3>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Market Stats</h3>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="text-finance-gray">Spread:</span>
-              <span className="font-bold text-finance-blue">${marketState.spread.toFixed(2)}</span>
+              <span className="text-gray-600">Spread:</span>
+              <span className="font-bold text-[#b01c2e]">${marketState.spread.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-finance-gray">Volume:</span>
-              <span className="font-bold text-finance-purple">
+              <span className="text-gray-600">Volume:</span>
+              <span className="font-bold text-[#b01c2e]">
                 {marketState.volume.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-finance-gray">Volatility:</span>
-              <span className="font-bold text-finance-red">
+              <span className="text-gray-600">Volatility:</span>
+              <span className="font-bold text-[#b01c2e]">
                 {(marketState.volatility * 100).toFixed(1)}%
               </span>
             </div>
@@ -291,63 +291,63 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       {/* Order Book and Trade History */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Order Book */}
-        <div className="bg-finance-card rounded-xl p-6 shadow-md">
-          <h3 className="text-xl font-bold mb-4 text-finance-gold">Order Book</h3>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Order Book</h3>
           <div className="space-y-2">
             {/* Sell Orders */}
-            <div className="text-finance-red text-sm font-semibold mb-2">SELL ORDERS</div>
+            <div className="text-[#b01c2e] text-sm font-semibold mb-2">SELL ORDERS</div>
             {Array.from({ length: 5 }, (_, i) => (
               <div key={`sell-${i}`} className="flex justify-between text-sm">
-                <span className="text-finance-red">
+                <span className="text-[#b01c2e]">
                   ${(marketState.currentPrice + (i + 1) * 0.5).toFixed(2)}
                 </span>
-                <span className="text-finance-gray">{Math.floor(Math.random() * 200) + 100}</span>
+                <span className="text-gray-600">{Math.floor(Math.random() * 200) + 100}</span>
               </div>
             ))}
 
             {/* Current Price */}
-            <div className="border-t border-finance-border my-2 pt-2">
-              <div className="flex justify-between font-bold text-finance-gold">
+            <div className="border-t border-gray-200 my-2 pt-2">
+              <div className="flex justify-between font-bold text-[#b01c2e]">
                 <span>${marketState.currentPrice.toFixed(2)}</span>
                 <span>MARKET</span>
               </div>
             </div>
 
             {/* Buy Orders */}
-            <div className="text-finance-green text-sm font-semibold mb-2">BUY ORDERS</div>
+            <div className="text-[#b01c2e] text-sm font-semibold mb-2">BUY ORDERS</div>
             {Array.from({ length: 5 }, (_, i) => (
               <div key={`buy-${i}`} className="flex justify-between text-sm">
-                <span className="text-finance-green">
+                <span className="text-[#b01c2e]">
                   ${(marketState.currentPrice - (i + 1) * 0.5).toFixed(2)}
                 </span>
-                <span className="text-finance-gray">{Math.floor(Math.random() * 200) + 100}</span>
+                <span className="text-gray-600">{Math.floor(Math.random() * 200) + 100}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Trade History */}
-        <div className="bg-finance-card rounded-xl p-6 shadow-md">
-          <h3 className="text-xl font-bold mb-4 text-finance-gold">Recent Trades</h3>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Recent Trades</h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {tradeHistory.length === 0 ? (
-              <div className="text-finance-gray text-center py-8">No recent trades</div>
+              <div className="text-gray-600 text-center py-8">No recent trades</div>
             ) : (
               tradeHistory.map((trade, index) => (
                 <div key={index} className="flex justify-between items-center text-sm">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-2 h-2 rounded-full ${trade.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'}`}
+                      className={`w-2 h-2 rounded-full ${trade.side === 'buy' ? 'bg-[#b01c2e]' : 'bg-[#b01c2e]'}`}
                     ></div>
                     <span
-                      className={trade.side === 'buy' ? 'text-finance-green' : 'text-finance-red'}
+                      className={trade.side === 'buy' ? 'text-[#b01c2e]' : 'text-[#b01c2e]'}
                     >
                       {trade.side.toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-finance-gold font-bold">${trade.price.toFixed(2)}</span>
-                  <span className="text-finance-gray">{trade.quantity}</span>
-                  <span className="text-finance-gray text-xs">
+                  <span className="text-[#b01c2e] font-bold">${trade.price.toFixed(2)}</span>
+                  <span className="text-gray-600">{trade.quantity}</span>
+                  <span className="text-gray-600 text-xs">
                     {new Date(trade.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
@@ -358,37 +358,37 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       </div>
 
       {/* Place Orders */}
-      <div className="bg-finance-card rounded-xl p-6 shadow-md">
-        <h3 className="text-xl font-bold mb-4 text-finance-gold">Place Orders</h3>
+      <div className="bg-white rounded-xl p-6 shadow-md">
+        <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Place Orders</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-finance-gray mb-2">Price</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">Price</label>
             <input
               type="number"
               step="0.01"
               defaultValue={marketState.currentPrice}
-              className="w-full bg-finance-bg border border-finance-border rounded-lg px-3 py-2 text-white focus:border-finance-gold focus:outline-none"
+              className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:border-[#b01c2e] focus:outline-none"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-finance-gray mb-2">Quantity</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">Quantity</label>
             <input
               type="number"
               defaultValue={100}
-              className="w-full bg-finance-bg border border-finance-border rounded-lg px-3 py-2 text-white focus:border-finance-gold focus:outline-none"
+              className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:border-[#b01c2e] focus:outline-none"
             />
           </div>
         </div>
         <div className="flex gap-3 mt-4">
           <button
             onClick={() => placeOrder('buy', marketState.currentPrice, 100)}
-            className="flex-1 bg-finance-green hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-[#b01c2e] hover:bg-[#b01c2e]/80 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
           >
             BUY
           </button>
           <button
             onClick={() => placeOrder('sell', marketState.currentPrice, 100)}
-            className="flex-1 bg-finance-red hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-[#b01c2e] hover:bg-[#b01c2e]/80 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
           >
             SELL
           </button>
@@ -396,10 +396,10 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       </div>
 
       {/* Your Orders */}
-      <div className="bg-finance-card rounded-xl p-6 shadow-md">
-        <h3 className="text-xl font-bold mb-4 text-finance-gold">Your Orders</h3>
+      <div className="bg-white rounded-xl p-6 shadow-md">
+        <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Your Orders</h3>
         {userOrders.length === 0 ? (
-          <p className="text-finance-gray text-center py-8">No orders placed yet</p>
+          <p className="text-gray-600 text-center py-8">No orders placed yet</p>
         ) : (
           <div className="space-y-2">
             {userOrders
@@ -408,18 +408,18 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
               .map((order) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between p-3 bg-finance-bg rounded-lg border border-finance-border"
+                  className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200"
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-3 h-3 rounded-full ${
-                        order.side === 'buy' ? 'bg-finance-green' : 'bg-finance-red'
+                        order.side === 'buy' ? 'bg-[#b01c2e]' : 'bg-[#b01c2e]'
                       }`}
                     ></div>
                     <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
-                    <span className="text-finance-gray">{order.quantity}</span>
+                    <span className="text-gray-600">{order.quantity}</span>
                   </div>
-                  <span className="font-bold text-finance-gold">${order.price.toFixed(2)}</span>
+                  <span className="font-bold text-[#b01c2e]">${order.price.toFixed(2)}</span>
                 </div>
               ))}
           </div>

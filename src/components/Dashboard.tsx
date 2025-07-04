@@ -271,12 +271,12 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
         {/* Mini-charts/stat cards */}
         <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
+          <div className="bg-white rounded-xl p-5 flex flex-col items-start shadow-md">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-5 h-5 text-finance-green" />
-              <span className="text-finance-gray text-xs">Score Trend</span>
+              <TrendingUp className="w-5 h-5 text-red-700" />
+              <span className="text-gray-600 text-xs">Score Trend</span>
             </div>
-            <div className="text-2xl font-bold text-finance-gold mb-1">{userStats.totalScore}</div>
+            <div className="text-2xl font-bold text-red-700 mb-1">{userStats.totalScore}</div>
             <ResponsiveContainer width="100%" height={40}>
               <LineChart data={dummyHistory} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
                 <Line
@@ -289,34 +289,34 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
+          <div className="bg-white rounded-xl p-5 flex flex-col items-start shadow-md">
             <div className="flex items-center gap-2 mb-2">
-              <Award className="w-5 h-5 text-finance-purple" />
-              <span className="text-finance-gray text-xs">Current Streak</span>
+              <Award className="w-5 h-5 text-yellow-400" />
+              <span className="text-gray-600 text-xs">Current Streak</span>
             </div>
-            <div className="text-2xl font-bold text-finance-green mb-1">
+            <div className="text-2xl font-bold text-red-700 mb-1">
               {userStats.currentStreak}
             </div>
-            <div className="text-xs text-finance-gray">Best: {userStats.bestScore}</div>
+            <div className="text-xs text-gray-600">Best: {userStats.bestScore}</div>
           </div>
-          <div className="bg-finance-card rounded-xl p-5 flex flex-col items-start shadow-md">
+          <div className="bg-white rounded-xl p-5 flex flex-col items-start shadow-md">
             <div className="flex items-center gap-2 mb-2">
-              <BarChart3 className="w-5 h-5 text-finance-blue" />
-              <span className="text-finance-gray text-xs">Level</span>
+              <BarChart3 className="w-5 h-5 text-jsblue" />
+              <span className="text-gray-600 text-xs">Level</span>
             </div>
-            <div className="text-2xl font-bold text-finance-blue mb-1">{userStats.level}</div>
-            <div className="text-xs text-finance-gray">Avg Score: {userStats.averageScore}</div>
+            <div className="text-2xl font-bold text-red-700 mb-1">{userStats.level}</div>
+            <div className="text-xs text-gray-600">Avg Score: {userStats.averageScore}</div>
           </div>
         </div>
         {/* Leaderboard */}
-        <div className="bg-finance-card rounded-xl p-5 shadow-md">
+        <div className="bg-white rounded-xl p-5 shadow-md">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-finance-gold" />
-            <span className="font-semibold text-finance-gold">Top Movers</span>
+            <BarChart3 className="w-5 h-5 text-red-700" />
+            <span className="font-semibold text-red-700">Top Movers</span>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-finance-gray">
+              <tr className="text-gray-600">
                 <th className="text-left font-normal">Name</th>
                 <th className="text-right font-normal">Score</th>
                 <th className="text-right font-normal">Change</th>
@@ -324,11 +324,11 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             </thead>
             <tbody>
               {leaderboard.map((entry, idx) => (
-                <tr key={entry.name} className={idx === 2 ? 'bg-finance-bg-light' : ''}>
+                <tr key={entry.name} className={idx === 2 ? 'bg-white/10' : ''}>
                   <td className="py-1 font-semibold text-white">{entry.name}</td>
-                  <td className="py-1 text-right text-finance-gold font-bold">{entry.score}</td>
+                  <td className="py-1 text-right text-red-700 font-bold">{entry.score}</td>
                   <td
-                    className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-finance-green' : 'text-finance-red'}`}
+                    className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-red-700' : 'text-red-700'}`}
                   >
                     {entry.change}
                   </td>
@@ -338,19 +338,19 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           </table>
         </div>
         {/* News/Feed */}
-        <div className="col-span-1 md:col-span-3 bg-finance-card rounded-xl p-5 shadow-md mt-6">
+        <div className="col-span-1 md:col-span-3 bg-white rounded-xl p-5 shadow-md mt-6">
           <div className="flex items-center gap-2 mb-4">
-            <Newspaper className="w-5 h-5 text-finance-blue" />
-            <span className="font-semibold text-finance-blue">Market News & Tips</span>
+            <Newspaper className="w-5 h-5 text-jsblue" />
+            <span className="font-semibold text-jsblue">Market News & Tips</span>
           </div>
           <ul>
             {newsFeed.map((item, idx) => (
               <li
                 key={idx}
-                className="flex justify-between py-2 border-b border-finance-border last:border-0"
+                className="flex justify-between py-2 border-b border-gray-200 last:border-0"
               >
                 <span className="text-white font-medium">{item.title}</span>
-                <span className="text-finance-gray text-xs">{item.time}</span>
+                <span className="text-gray-600 text-xs">{item.time}</span>
               </li>
             ))}
           </ul>
