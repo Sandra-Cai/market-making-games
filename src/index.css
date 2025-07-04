@@ -11,7 +11,9 @@
   }
 
   body {
-    @apply bg-finance-bg text-white font-inter min-h-screen;
+    background: #fff;
+    color: #111;
+    font-family: 'Inter', 'IBM Plex Sans', Arial, sans-serif;
   }
 }
 
@@ -43,6 +45,36 @@
   .progress-fill {
     @apply bg-gradient-to-r from-primary-500 to-success-500 h-2 rounded-full transition-all duration-300;
   }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Merriweather', 'Playfair Display', serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+nav {
+  font-family: 'Inter', 'IBM Plex Sans', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Remove card/panel backgrounds */
+.bg-white, .bg-gray-50, .bg-slate-50 {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Section divider utility */
+.divider {
+  border-bottom: 1px solid #e5e7eb;
+  margin: 3rem 0;
+}
+
+/* Whitespace utility */
+.section-space {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
 
 ::-webkit-scrollbar {

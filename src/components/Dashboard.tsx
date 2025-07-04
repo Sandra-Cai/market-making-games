@@ -75,7 +75,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
   return (
     <div className="min-h-screen bg-jsbg font-sans">
-      <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 bg-white overflow-hidden">
+      <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 section-space overflow-hidden">
         <HeroBackground />
         {/* Header */}
         <motion.div
@@ -87,7 +87,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
         >
           <div className="flex flex-col items-center gap-6 mb-6">
             <Brain className="w-16 h-16 text-red-700 animate-bounce-slow" aria-hidden="true" />
-            <h1 className="text-7xl font-extrabold text-black tracking-tight font-serif animate-fade-in" style={{ fontFamily: 'Merriweather, serif' }}>
+            <h1 className="text-7xl font-extrabold tracking-tight font-serif animate-fade-in" style={{ fontFamily: 'Merriweather, serif', color: '#b01c2e' }}>
               Market Making Games
             </h1>
           </div>
@@ -104,7 +104,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             </a>
           </div>
         </motion.div>
-
+        <div className="divider" />
         {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -246,14 +246,14 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
         {/* Games Section */}
         <div className="w-full mb-16" id="games-section">
-          <h2 className="text-3xl font-extrabold text-black mb-12 tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>Games</h2>
+          <h2 className="text-3xl font-extrabold mb-12 tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif', color: '#b01c2e' }}>Games</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 justify-center">
             {games.map((game, idx) => (
               <motion.button
                 key={game.id}
                 onClick={() => navigate(`/game/${game.id}`)}
-                className="flex flex-col items-center justify-center gap-4 py-10 px-8 bg-white text-black rounded-xl shadow-none hover:text-red-700 hover:scale-105 hover:underline focus:outline-none transition-all duration-200"
-                style={{ minWidth: '260px' }}
+                className="flex flex-col items-center justify-center gap-4 py-10 px-8 text-black rounded-none shadow-none border-0 hover:text-red-700 hover:underline focus:outline-none transition-all duration-200 font-serif text-left text-2xl font-bold tracking-tight"
+                style={{ minWidth: '260px', background: 'transparent' }}
                 aria-label={`Play ${game.title}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
@@ -262,7 +262,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
                 transition={{ delay: 0.1 * idx, duration: 0.5, type: 'spring' }}
               >
                 <span className="mb-2">{<game.icon className="w-12 h-12 text-red-700" />}</span>
-                <span className="text-2xl font-serif font-bold tracking-tight">{game.title}</span>
+                <span>{game.title}</span>
                 <span className="text-base font-sans text-gray-700 font-light">{game.description}</span>
               </motion.button>
             ))}

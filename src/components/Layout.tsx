@@ -1,41 +1,28 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-const navItems = [
-  { label: 'Dashboard', to: '/' },
-  { label: 'Games', to: '/games' },
-  { label: 'Leaderboard', to: '/leaderboard' },
-  { label: 'Achievements', to: '/achievements' },
-  { label: 'Settings', to: '/settings' },
-];
+const NAV_RED = '#b01c2e';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  return (
-    <div className="min-h-screen bg-white font-sans">
-      {/* Top Navigation Bar */}
-      <header className="w-full flex items-center justify-between px-12 py-6 border-b border-gray-200 bg-white">
-        <Link to="/" className="text-2xl font-serif font-bold tracking-tight text-black hover:text-red-700 transition-colors" style={{ fontFamily: 'Merriweather, serif' }}>
-          Jane Street
-        </Link>
-        <nav className="flex gap-10">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={`text-lg font-medium transition-colors ${location.pathname === item.to ? 'text-red-700 font-bold' : 'text-gray-700 hover:text-red-700'}`}
-              aria-current={location.pathname === item.to ? 'page' : undefined}
-              style={{ fontFamily: 'Inter, IBM Plex Sans, sans-serif' }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
-      {/* Main Content */}
-      <main className="flex flex-col items-center justify-center w-full min-h-[80vh] px-4 py-12">
-        {children}
-      </main>
-    </div>
-  );
-}
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="min-h-screen bg-white text-black font-sans">
+    {/* Top Navigation Bar */}
+    <nav className="sticky top-0 z-30 w-full bg-white/90 border-b border-gray-200 backdrop-blur flex items-center justify-between px-8 py-4">
+      <Link to="/" className="flex items-center gap-2 group">
+        {/* Optionally, add a concentric circle SVG here for demo purposes */}
+        <span className="text-2xl md:text-3xl font-extrabold font-serif tracking-tight" style={{ color: NAV_RED, fontFamily: 'Merriweather, serif' }}>
+          Market Making Games
+        </span>
+      </Link>
+      <div className="flex gap-8 items-center text-base font-sans">
+        <Link to="/" className="hover:underline hover:text-red-700 transition-colors">Home</Link>
+        <a href="#games-section" className="hover:underline hover:text-red-700 transition-colors">Games</a>
+        <a href="https://www.janestreet.com/puzzles/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-red-700 transition-colors">Puzzles</a>
+      </div>
+    </nav>
+    <main className="w-full mx-auto max-w-6xl px-4 md:px-8 py-8">
+      {children}
+    </main>
+  </div>
+);
+
+export default Layout;
