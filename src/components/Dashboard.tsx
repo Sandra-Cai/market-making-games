@@ -270,18 +270,20 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
         {/* Games Section */}
         <div className="w-full mb-16">
-          <h2 className="text-3xl font-extrabold text-black mb-8 tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>Games</h2>
-          <div className="flex flex-wrap gap-10 justify-center">
+          <h2 className="text-3xl font-extrabold text-black mb-12 tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>Games</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 justify-center">
             {games.map((game) => (
-              <FinanceGameCard
+              <button
                 key={game.id}
-                icon={<game.icon className="w-8 h-8" />}
-                title={game.title}
-                highScore={userStats[gameScoreKey[game.id]] || 0}
-                change={'+0.0%'}
-                sparkData={gameSparkData[game.id] || []}
                 onClick={() => navigate(`/game/${game.id}`)}
-              />
+                className="flex flex-col items-center justify-center gap-4 py-10 px-8 bg-white text-black hover:text-red-700 transition-colors focus:outline-none"
+                style={{ minWidth: '260px' }}
+                aria-label={`Play ${game.title}`}
+              >
+                <span className="mb-2">{<game.icon className="w-12 h-12 text-red-700" />}</span>
+                <span className="text-2xl font-serif font-bold tracking-tight">{game.title}</span>
+                <span className="text-base font-sans text-gray-700 font-light">{game.description}</span>
+              </button>
             ))}
           </div>
         </div>
