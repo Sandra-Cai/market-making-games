@@ -13,7 +13,6 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
-import FinanceGameCard from './games/FinanceGameCard';
 
 interface DashboardProps {
   games: Game[];
@@ -44,53 +43,6 @@ const newsFeed = [
   { title: 'Mental Math Tricks for Quants', time: '1d ago' },
   { title: 'Strategy Game: New Scenarios Added!', time: '2d ago' },
 ];
-
-const gameSparkData = {
-  'market-making': [
-    { value: 800 },
-    { value: 850 },
-    { value: 900 },
-    { value: 950 },
-    { value: 1000 },
-    { value: 1050 },
-    { value: 1100 },
-  ],
-  probability: [
-    { value: 600 },
-    { value: 650 },
-    { value: 700 },
-    { value: 750 },
-    { value: 800 },
-    { value: 850 },
-    { value: 900 },
-  ],
-  'mental-math': [
-    { value: 1000 },
-    { value: 1050 },
-    { value: 1100 },
-    { value: 1150 },
-    { value: 1200 },
-    { value: 1250 },
-    { value: 1300 },
-  ],
-  strategy: [
-    { value: 700 },
-    { value: 750 },
-    { value: 800 },
-    { value: 850 },
-    { value: 900 },
-    { value: 950 },
-    { value: 1000 },
-  ],
-};
-
-// Map game IDs to GameStats keys
-const gameScoreKey: Record<string, keyof GameStats> = {
-  'market-making': 'marketMakingScore',
-  'probability': 'probabilityScore',
-  'mental-math': 'mentalMathScore',
-  'strategy': 'strategyScore',
-};
 
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore((s) => s.gameHistory);
