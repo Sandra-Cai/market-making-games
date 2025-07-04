@@ -75,8 +75,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
   return (
     <div className="min-h-screen bg-jsbg font-sans">
-      <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 section-space overflow-hidden">
-        <HeroBackground />
+      <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 section-space overflow-hidden bg-white">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -40 }}
@@ -86,19 +85,19 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           role="banner"
         >
           <div className="flex flex-col items-center gap-6 mb-6">
-            <Brain className="w-16 h-16 text-red-700 animate-bounce-slow" aria-hidden="true" />
+            <Brain className="w-16 h-16 text-[#b01c2e] animate-bounce-slow" aria-hidden="true" />
             <h1 className="text-7xl font-extrabold tracking-tight font-serif animate-fade-in" style={{ fontFamily: 'Merriweather, serif', color: '#b01c2e' }}>
               Market Making Games
             </h1>
           </div>
           <p className="text-2xl text-gray-700 max-w-2xl mx-auto font-light font-sans animate-fade-in delay-200">
             Your mental gym for quantitative careers.<br />
-            <span className="text-red-700 font-semibold">Sharpen your mind. Play. Win.</span>
+            <span className="text-[#b01c2e] font-semibold">Sharpen your mind. Play. Win.</span>
           </p>
           <div className="mt-8">
             <a
               href="#games-section"
-              className="inline-block px-8 py-3 rounded-full bg-red-700 text-white text-lg font-bold shadow hover:bg-red-800 transition-all animate-fade-in delay-400"
+              className="inline-block px-8 py-3 rounded-full bg-[#b01c2e] text-white text-lg font-bold shadow hover:bg-[#a01a29] transition-all animate-fade-in delay-400"
             >
               Start Playing
             </a>
@@ -114,28 +113,28 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
         >
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Trophy className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <Trophy className="w-7 h-7 text-[#b01c2e]" aria-hidden="true" />
               <span className="text-3xl font-bold text-black font-serif">{userStats.totalScore}</span>
             </div>
             <p className="text-lg text-gray-700 font-light font-sans">Total Score</p>
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <BarChart3 className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <BarChart3 className="w-7 h-7 text-[#b01c2e]" aria-hidden="true" />
               <span className="text-3xl font-bold text-black font-serif">{userStats.gamesPlayed}</span>
             </div>
             <p className="text-lg text-gray-700 font-light font-sans">Games Played</p>
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <Star className="w-7 h-7 text-[#b01c2e]" aria-hidden="true" />
               <span className="text-3xl font-bold text-black font-serif">{(userStats.winRate * 100).toFixed(0)}%</span>
             </div>
             <p className="text-lg text-gray-700 font-light font-sans">Win Rate</p>
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Flame className="w-7 h-7 text-red-700" aria-hidden="true" />
+              <Flame className="w-7 h-7 text-[#b01c2e]" aria-hidden="true" />
               <span className="text-3xl font-bold text-black font-serif">{userStats.currentStreak}</span>
             </div>
             <p className="text-lg text-gray-700 font-light font-sans">Current Streak</p>
@@ -252,7 +251,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
               <motion.button
                 key={game.id}
                 onClick={() => navigate(`/game/${game.id}`)}
-                className="flex flex-col items-center justify-center gap-4 py-10 px-8 text-black rounded-none shadow-none border-0 hover:text-red-700 hover:underline focus:outline-none transition-all duration-200 font-serif text-left text-2xl font-bold tracking-tight"
+                className="flex flex-col items-center justify-center gap-4 py-10 px-8 text-black rounded-none shadow-none border-0 hover:text-[#b01c2e] hover:underline focus:outline-none transition-all duration-200 font-serif text-left text-2xl font-bold tracking-tight"
                 style={{ minWidth: '260px', background: 'transparent' }}
                 aria-label={`Play ${game.title}`}
                 whileHover={{ scale: 1.05 }}
@@ -261,7 +260,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * idx, duration: 0.5, type: 'spring' }}
               >
-                <span className="mb-2">{<game.icon className="w-12 h-12 text-red-700" />}</span>
+                <span className="mb-2">{<game.icon className="w-12 h-12 text-[#b01c2e]" />}</span>
                 <span>{game.title}</span>
                 <span className="text-base font-sans text-gray-700 font-light">{game.description}</span>
               </motion.button>
@@ -273,10 +272,10 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
         <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-xl p-5 flex flex-col items-start shadow-md">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-5 h-5 text-red-700" />
+              <TrendingUp className="w-5 h-5 text-[#b01c2e]" />
               <span className="text-gray-600 text-xs">Score Trend</span>
             </div>
-            <div className="text-2xl font-bold text-red-700 mb-1">{userStats.totalScore}</div>
+            <div className="text-2xl font-bold text-[#b01c2e] mb-1">{userStats.totalScore}</div>
             <ResponsiveContainer width="100%" height={40}>
               <LineChart data={dummyHistory} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
                 <Line
@@ -294,7 +293,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
               <Award className="w-5 h-5 text-yellow-400" />
               <span className="text-gray-600 text-xs">Current Streak</span>
             </div>
-            <div className="text-2xl font-bold text-red-700 mb-1">
+            <div className="text-2xl font-bold text-[#b01c2e] mb-1">
               {userStats.currentStreak}
             </div>
             <div className="text-xs text-gray-600">Best: {userStats.bestScore}</div>
@@ -304,15 +303,15 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
               <BarChart3 className="w-5 h-5 text-jsblue" />
               <span className="text-gray-600 text-xs">Level</span>
             </div>
-            <div className="text-2xl font-bold text-red-700 mb-1">{userStats.level}</div>
+            <div className="text-2xl font-bold text-[#b01c2e] mb-1">{userStats.level}</div>
             <div className="text-xs text-gray-600">Avg Score: {userStats.averageScore}</div>
           </div>
         </div>
         {/* Leaderboard */}
         <div className="bg-white rounded-xl p-5 shadow-md">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-red-700" />
-            <span className="font-semibold text-red-700">Top Movers</span>
+            <BarChart3 className="w-5 h-5 text-[#b01c2e]" />
+            <span className="font-semibold text-[#b01c2e]">Top Movers</span>
           </div>
           <table className="w-full text-sm">
             <thead>
@@ -326,9 +325,9 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
               {leaderboard.map((entry, idx) => (
                 <tr key={entry.name} className={idx === 2 ? 'bg-white/10' : ''}>
                   <td className="py-1 font-semibold text-white">{entry.name}</td>
-                  <td className="py-1 text-right text-red-700 font-bold">{entry.score}</td>
+                  <td className="py-1 text-right text-[#b01c2e] font-bold">{entry.score}</td>
                   <td
-                    className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-red-700' : 'text-red-700'}`}
+                    className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-[#b01c2e]' : 'text-[#b01c2e]'}`}
                   >
                     {entry.change}
                   </td>
