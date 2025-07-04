@@ -44,6 +44,19 @@ const newsFeed = [
   { title: 'Strategy Game: New Scenarios Added!', time: '2d ago' },
 ];
 
+// Hero SVG background
+const HeroBackground = () => (
+  <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="hero-gradient" x1="0" y1="0" x2="0" y2="1">
+        <stop stopColor="#fff" stopOpacity="0.7" />
+        <stop offset="1" stopColor="#f3f4f6" stopOpacity="0.9" />
+      </linearGradient>
+    </defs>
+    <path fill="url(#hero-gradient)" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z" />
+  </svg>
+);
+
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore((s) => s.gameHistory);
   const achievements = useGameStore((s) => s.achievements);
@@ -62,23 +75,34 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
   return (
     <div className="min-h-screen bg-jsbg font-sans">
-      <div className="container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 bg-white">
+      <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 bg-white overflow-hidden">
+        <HeroBackground />
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -40 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.8, type: 'spring' }}
+          className="relative z-10 text-center mb-20 pt-8"
           role="banner"
         >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <Brain className="w-14 h-14 text-red-700" aria-hidden="true" />
-            <h1 className="text-6xl font-extrabold text-black tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>
+          <div className="flex flex-col items-center gap-6 mb-6">
+            <Brain className="w-16 h-16 text-red-700 animate-bounce-slow" aria-hidden="true" />
+            <h1 className="text-7xl font-extrabold text-black tracking-tight font-serif animate-fade-in" style={{ fontFamily: 'Merriweather, serif' }}>
               Market Making Games
             </h1>
           </div>
-          <p className="text-2xl text-gray-700 max-w-2xl mx-auto font-light font-sans">
-            Your mental gym for quantitative careers. Train your brain with interactive exercises and challenges.
+          <p className="text-2xl text-gray-700 max-w-2xl mx-auto font-light font-sans animate-fade-in delay-200">
+            Your mental gym for quantitative careers.<br />
+            <span className="text-red-700 font-semibold">Sharpen your mind. Play. Win.</span>
           </p>
+          <div className="mt-8">
+            <a
+              href="#games-section"
+              className="inline-block px-8 py-3 rounded-full bg-red-700 text-white text-lg font-bold shadow hover:bg-red-800 transition-all animate-fade-in delay-400"
+            >
+              Start Playing
+            </a>
+          </div>
         </motion.div>
 
         {/* Stats Section */}
@@ -221,21 +245,26 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
         </motion.div>
 
         {/* Games Section */}
-        <div className="w-full mb-16">
+        <div className="w-full mb-16" id="games-section">
           <h2 className="text-3xl font-extrabold text-black mb-12 tracking-tight font-serif" style={{ fontFamily: 'Merriweather, serif' }}>Games</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 justify-center">
-            {games.map((game) => (
-              <button
+            {games.map((game, idx) => (
+              <motion.button
                 key={game.id}
                 onClick={() => navigate(`/game/${game.id}`)}
-                className="flex flex-col items-center justify-center gap-4 py-10 px-8 bg-white text-black hover:text-red-700 transition-colors focus:outline-none"
+                className="flex flex-col items-center justify-center gap-4 py-10 px-8 bg-white text-black rounded-xl shadow-none hover:text-red-700 hover:scale-105 hover:underline focus:outline-none transition-all duration-200"
                 style={{ minWidth: '260px' }}
                 aria-label={`Play ${game.title}`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * idx, duration: 0.5, type: 'spring' }}
               >
                 <span className="mb-2">{<game.icon className="w-12 h-12 text-red-700" />}</span>
                 <span className="text-2xl font-serif font-bold tracking-tight">{game.title}</span>
                 <span className="text-base font-sans text-gray-700 font-light">{game.description}</span>
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
