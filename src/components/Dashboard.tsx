@@ -155,7 +155,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
     }));
 
   return (
-    <div className="min-h-screen bg-jsbg font-sans">
+    <div className="min-h-screen bg-white font-sans">
       {showOnboarding && <OnboardingModal onClose={() => setShowOnboarding(false)} />}
       <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 section-space overflow-hidden bg-white">
         {/* Header */}
@@ -163,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           initial={{ opacity: 0, y: -40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, type: 'spring' }}
-          className="relative z-10 text-center mb-20 pt-8"
+          className="relative z-10 text-center mb-20 pt-8 bg-white"
           role="banner"
         >
           <div className="flex flex-col items-center gap-6 mb-6">
