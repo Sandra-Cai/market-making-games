@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp, Newspaper } from 'lucide-react';
 import { Game, GameStats } from '../types/game';
@@ -43,6 +43,62 @@ const newsFeed = [
   { title: 'Mental Math Tricks for Quants', time: '1d ago' },
   { title: 'Strategy Game: New Scenarios Added!', time: '2d ago' },
 ];
+
+// Add MarketNewsFeed component
+const NEWS_API_KEY = 'YOUR_FINNHUB_API_KEY'; // Replace with your Finnhub API key
+
+interface NewsItem {
+  headline: string;
+  url: string;
+  source: string;
+  datetime: number;
+}
+
+const MarketNewsFeed: React.FC = () => {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchNews() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${NEWS_API_KEY}`);
+        if (!res.ok) throw new Error('API error');
+        const json = await res.json();
+        setNews(json.slice(0, 8)); // Show top 8 headlines
+      } catch (e) {
+        setError('Failed to load news');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+    const interval = setInterval(fetchNews, 60000); // refresh every 60s
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 mt-8 w-full max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Market News</h2>
+      {loading && <div className="text-gray-600">Loading news...</div>}
+      {error && <div className="text-red-700">{error}</div>}
+      {!loading && !error && (
+        <ul className="space-y-2">
+          {news.map((item, idx) => (
+            <li key={idx} className="flex flex-col md:flex-row md:items-center md:gap-2">
+              <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-[#b01c2e] hover:underline font-medium">
+                {item.headline}
+              </a>
+              <span className="text-gray-500 text-xs md:ml-2">{item.source} &middot; {new Date(item.datetime * 1000).toLocaleTimeString()}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore((s) => s.gameHistory);
@@ -341,6 +397,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             ))}
           </ul>
         </div>
+        <MarketNewsFeed />
 
         {/* Footer */}
         <motion.div
