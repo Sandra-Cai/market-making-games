@@ -1,12 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Clock, Target, CheckCircle } from 'lucide-react';
+import { TrendingUp, Clock, Target, CheckCircle, Info } from 'lucide-react';
 import { MarketState, MarketOrder, GameStats } from '../../types/game';
 import { XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 interface MarketMakingGameProps {
   onStatsUpdate: (stats: Partial<GameStats>) => void;
 }
+
+const InstructionsSection = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 max-w-2xl mx-auto">
+    <h2 className="text-2xl font-bold mb-2 text-[#b01c2e] font-serif flex items-center gap-2">
+      <Info className="w-6 h-6 text-[#b01c2e]" /> How to Play Market Making
+    </h2>
+    <ul className="text-gray-700 text-base list-disc pl-6 space-y-1">
+      <li>
+        Place <span className="font-semibold text-[#b01c2e]">buy</span> and <span className="font-semibold text-[#b01c2e]">sell</span> orders to make a market.
+      </li>
+      <li>
+        Your goal: <span className="font-semibold text-[#b01c2e]">balance your book</span> and profit from the <span className="underline cursor-help" title="The difference between the best ask and best bid prices. Lower spread = more competitive market.">spread</span>.
+      </li>
+      <li>
+        Watch the <span className="underline cursor-help" title="A list of all buy and sell orders in the market, showing price and quantity.">order book</span> and react to market moves.
+      </li>
+      <li>
+        Try to maximize your profit while minimizing risk!
+      </li>
+    </ul>
+  </div>
+);
 
 const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) => {
   const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -199,6 +221,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
 
   return (
     <div className="space-y-6">
+      <InstructionsSection />
       {/* Game Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Market Making</h2>
