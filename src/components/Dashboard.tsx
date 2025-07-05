@@ -100,10 +100,48 @@ const MarketNewsFeed: React.FC = () => {
   );
 };
 
+// OnboardingModal component
+const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full text-center relative">
+      <button
+        className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-2xl font-bold"
+        onClick={onClose}
+        aria-label="Close welcome modal"
+      >
+        &times;
+      </button>
+      <h2 className="text-3xl font-bold mb-4 text-[#b01c2e] font-serif">Welcome to Market Making Games!</h2>
+      <p className="text-lg text-gray-700 mb-4">
+        This is your mental gym for quantitative careers. Play interactive games, track your stats, and follow live financial markets.
+      </p>
+      <ul className="text-left text-gray-700 mb-6 space-y-2">
+        <li><span className="font-bold text-[#b01c2e]">•</span> <b>Live Stock Ticker:</b> See real-time prices for top stocks and indices.</li>
+        <li><span className="font-bold text-[#b01c2e]">•</span> <b>Market News:</b> Stay updated with the latest financial headlines.</li>
+        <li><span className="font-bold text-[#b01c2e]">•</span> <b>Games:</b> Practice market making, probability, mental math, and more!</li>
+      </ul>
+      <button
+        className="mt-2 px-6 py-2 rounded-full bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all"
+        onClick={onClose}
+      >
+        Get Started
+      </button>
+    </div>
+  </div>
+);
+
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore((s) => s.gameHistory);
   const achievements = useGameStore((s) => s.achievements);
   const navigate = useNavigate();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem('mmg_onboarded')) {
+      setShowOnboarding(true);
+      localStorage.setItem('mmg_onboarded', '1');
+    }
+  }, []);
 
   // Prepare data for the performance chart
   const chartData = gameHistory
@@ -118,6 +156,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
   return (
     <div className="min-h-screen bg-jsbg font-sans">
+      {showOnboarding && <OnboardingModal onClose={() => setShowOnboarding(false)} />}
       <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 section-space overflow-hidden bg-white">
         {/* Header */}
         <motion.div
