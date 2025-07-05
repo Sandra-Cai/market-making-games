@@ -208,14 +208,11 @@ const StockDetails: React.FC<StockDetailsProps> = ({ symbol, name, onClose }) =>
   );
 };
 
-const StockSearch: React.FC = () => {
+const StockSearch: React.FC<{ onShowDetails: (symbol: string, name: string) => void }> = ({ onShowDetails }) => {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<StockSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
-  const [selectedSymbol, setSelectedSymbol] = useState('');
-  const [selectedName, setSelectedName] = useState('');
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -230,9 +227,7 @@ const StockSearch: React.FC = () => {
       if (!symJson.result || symJson.result.length === 0) throw new Error('No results');
       const symbol = symJson.result[0].symbol;
       const name = symJson.result[0].description;
-      setSelectedSymbol(symbol);
-      setSelectedName(name);
-      setShowDetails(true);
+      onShowDetails(symbol, name);
       // Get quote
       const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
       if (!quoteRes.ok) throw new Error('API error');
@@ -277,13 +272,85 @@ const StockSearch: React.FC = () => {
           </div>
         </div>
       )}
-      {showDetails && selectedSymbol && selectedName && (
-        <StockDetails
-          symbol={selectedSymbol}
-          name={selectedName}
-          onClose={() => setShowDetails(false)}
-        />
-      )}
+    </div>
+  );
+};
+
+// Watchlist utilities
+function getWatchlist(): string[] {
+  return JSON.parse(localStorage.getItem('mmg_watchlist') || '[]');
+}
+function setWatchlist(list: string[]) {
+  localStorage.setItem('mmg_watchlist', JSON.stringify(list));
+}
+
+// Watchlist component
+const Watchlist: React.FC<{ onSelect: (symbol: string, name: string) => void }> = ({ onSelect }) => {
+  const [symbols, setSymbols] = useState<string[]>(getWatchlist());
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setSymbols(getWatchlist());
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      if (symbols.length === 0) { setData([]); setLoading(false); return; }
+      try {
+        const results = await Promise.all(symbols.map(async (symbol) => {
+          const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
+          const quoteJson = await quoteRes.json();
+          const profileRes = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${STOCK_API_KEY}`);
+          const profileJson = await profileRes.json();
+          return {
+            symbol,
+            name: profileJson.name || symbol,
+            price: quoteJson.c,
+            change: quoteJson.d,
+            percent: quoteJson.dp,
+          };
+        }));
+        setData(results);
+      } catch {
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [symbols]);
+
+  if (symbols.length === 0) return null;
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 w-full max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Your Watchlist</h2>
+      {loading && <div className="text-gray-600">Loading...</div>}
+      <ul className="divide-y divide-gray-200">
+        {data.map((item, idx) => (
+          <li key={item.symbol} className="flex items-center justify-between py-2">
+            <button onClick={() => onSelect(item.symbol, item.name)} className="text-[#b01c2e] font-bold hover:underline">
+              {item.symbol} <span className="text-gray-700 font-normal">{item.name}</span>
+            </button>
+            <span className="text-lg font-bold">${item.price?.toFixed(2)}</span>
+            <span className={item.percent >= 0 ? 'text-green-600' : 'text-red-600'}>
+              {item.change?.toFixed(2)} ({item.percent?.toFixed(2)}%)
+            </span>
+            <button
+              className="ml-4 text-gray-400 hover:text-[#b01c2e] text-xl font-bold"
+              onClick={() => {
+                const updated = symbols.filter(s => s !== item.symbol);
+                setWatchlist(updated);
+                setSymbols(updated);
+              }}
+              aria-label="Remove from watchlist"
+            >
+              &times;
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
@@ -323,6 +390,10 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const achievements = useGameStore((s) => s.achievements);
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  // Move StockDetails modal state up
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState('');
+  const [selectedName, setSelectedName] = useState('');
 
   useEffect(() => {
     if (!localStorage.getItem('mmg_onboarded')) {
@@ -624,7 +695,25 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             ))}
           </ul>
         </div>
-        <StockSearch />
+        <Watchlist onSelect={(symbol, name) => {
+          setSelectedSymbol(symbol);
+          setSelectedName(name);
+          setShowDetails(true);
+        }} />
+        <StockSearch
+          onShowDetails={(symbol, name) => {
+            setSelectedSymbol(symbol);
+            setSelectedName(name);
+            setShowDetails(true);
+          }}
+        />
+        {showDetails && selectedSymbol && selectedName && (
+          <StockDetails
+            symbol={selectedSymbol}
+            name={selectedName}
+            onClose={() => setShowDetails(false)}
+          />
+        )}
         <MarketNewsFeed />
 
         {/* Footer */}
