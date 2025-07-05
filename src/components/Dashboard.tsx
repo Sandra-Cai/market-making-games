@@ -100,6 +100,194 @@ const MarketNewsFeed: React.FC = () => {
   );
 };
 
+// Add StockSearch component
+const STOCK_API_KEY = 'YOUR_FINNHUB_API_KEY'; // Replace with your Finnhub API key
+
+interface StockSummary {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  percent: number;
+}
+
+// Add StockDetails modal
+interface StockDetailsProps {
+  symbol: string;
+  name: string;
+  onClose: () => void;
+}
+
+const StockDetails: React.FC<StockDetailsProps> = ({ symbol, name, onClose }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [prices, setPrices] = useState<{ date: string; close: number }[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
+
+  useEffect(() => {
+    async function fetchDetails() {
+      setLoading(true);
+      setError(null);
+      try {
+        // Get historical prices (last 30 days)
+        const now = Math.floor(Date.now() / 1000);
+        const monthAgo = now - 60 * 60 * 24 * 30;
+        const priceRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${monthAgo}&to=${now}&token=${STOCK_API_KEY}`);
+        if (!priceRes.ok) throw new Error('API error');
+        const priceJson = await priceRes.json();
+        if (priceJson.s !== 'ok') throw new Error('No price data');
+        const prices = priceJson.c.map((close: number, i: number) => ({
+          date: new Date(priceJson.t[i] * 1000).toLocaleDateString(),
+          close,
+        }));
+        setPrices(prices);
+        // Get news
+        const newsRes = await fetch(`https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${new Date(monthAgo * 1000).toISOString().slice(0,10)}&to=${new Date(now * 1000).toISOString().slice(0,10)}&token=${STOCK_API_KEY}`);
+        if (!newsRes.ok) throw new Error('API error');
+        const newsJson = await newsRes.json();
+        setNews(newsJson.slice(0, 5));
+      } catch {
+        setError('Failed to load stock details');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDetails();
+  }, [symbol]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-xl shadow-xl p-8 max-w-xl w-full relative">
+        <button
+          className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-2xl font-bold"
+          onClick={onClose}
+          aria-label="Close stock details"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-2 text-[#b01c2e] font-serif">{symbol} <span className="text-gray-700 font-normal">{name}</span></h2>
+        {loading && <div className="text-gray-600">Loading...</div>}
+        {error && <div className="text-red-700">{error}</div>}
+        {!loading && !error && (
+          <>
+            <div className="mb-4">
+              <h3 className="text-lg font-bold mb-1 text-[#b01c2e]">Price (Last 30 Days)</h3>
+              <div className="w-full h-32 bg-gray-50 rounded flex items-end overflow-x-auto">
+                {prices.length > 1 ? (
+                  <svg width="100%" height="100%" viewBox={`0 0 ${prices.length * 10} 100`} preserveAspectRatio="none">
+                    <polyline
+                      fill="none"
+                      stroke="#b01c2e"
+                      strokeWidth="3"
+                      points={prices.map((p, i) => `${i * 10},${100 - (p.close / Math.max(...prices.map(x => x.close))) * 90}`).join(' ')}
+                    />
+                  </svg>
+                ) : (
+                  <div className="text-gray-500">No chart data</div>
+                )}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-1 text-[#b01c2e]">Recent News</h3>
+              {news.length === 0 && <div className="text-gray-500">No recent news</div>}
+              <ul className="space-y-1">
+                {news.map((item, idx) => (
+                  <li key={idx}>
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-[#b01c2e] hover:underline font-medium">
+                      {item.headline}
+                    </a>
+                    <span className="text-gray-500 text-xs ml-2">{item.source} &middot; {new Date(item.datetime * 1000).toLocaleDateString()}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const StockSearch: React.FC = () => {
+  const [query, setQuery] = useState('');
+  const [result, setResult] = useState<StockSummary | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState('');
+  const [selectedName, setSelectedName] = useState('');
+
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      // Search for symbol
+      const symRes = await fetch(`https://finnhub.io/api/v1/search?q=${query}&token=${STOCK_API_KEY}`);
+      if (!symRes.ok) throw new Error('API error');
+      const symJson = await symRes.json();
+      if (!symJson.result || symJson.result.length === 0) throw new Error('No results');
+      const symbol = symJson.result[0].symbol;
+      const name = symJson.result[0].description;
+      setSelectedSymbol(symbol);
+      setSelectedName(name);
+      setShowDetails(true);
+      // Get quote
+      const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
+      if (!quoteRes.ok) throw new Error('API error');
+      const quoteJson = await quoteRes.json();
+      setResult({
+        symbol,
+        name,
+        price: quoteJson.c,
+        change: quoteJson.d,
+        percent: quoteJson.dp,
+      });
+    } catch (err: any) {
+      setError('Stock not found or API error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 w-full max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Stock Search</h2>
+      <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+        <input
+          type="text"
+          value={query}
+          onChange={e => setQuery(e.target.value.toUpperCase())}
+          placeholder="Enter symbol (e.g. AAPL, TSLA)"
+          className="flex-1 border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:border-[#b01c2e]"
+        />
+        <button type="submit" className="px-6 py-2 rounded bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all">
+          Search
+        </button>
+      </form>
+      {loading && <div className="text-gray-600">Loading...</div>}
+      {error && <div className="text-red-700">{error}</div>}
+      {result && (
+        <div className="mt-4 p-4 rounded border border-gray-200 bg-white">
+          <div className="text-xl font-bold text-[#b01c2e]">{result.symbol} <span className="text-gray-700 font-normal">{result.name}</span></div>
+          <div className="text-lg text-gray-700">Price: <span className="font-bold">${result.price?.toFixed(2)}</span></div>
+          <div className={result.percent >= 0 ? 'text-green-600' : 'text-red-600'}>
+            Change: {result.change?.toFixed(2)} ({result.percent?.toFixed(2)}%)
+          </div>
+        </div>
+      )}
+      {showDetails && selectedSymbol && selectedName && (
+        <StockDetails
+          symbol={selectedSymbol}
+          name={selectedName}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
+    </div>
+  );
+};
+
 // OnboardingModal component
 const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -436,6 +624,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             ))}
           </ul>
         </div>
+        <StockSearch />
         <MarketNewsFeed />
 
         {/* Footer */}
