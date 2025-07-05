@@ -239,7 +239,7 @@ const StockSearch: React.FC<{ onShowDetails: (symbol: string, name: string) => v
         change: quoteJson.d,
         percent: quoteJson.dp,
       });
-    } catch (err: any) {
+    } catch (err) {
       setError('Stock not found or API error');
     } finally {
       setLoading(false);
@@ -287,7 +287,7 @@ function setWatchlist(list: string[]) {
 // Watchlist component
 const Watchlist: React.FC<{ onSelect: (symbol: string, name: string) => void }> = ({ onSelect }) => {
   const [symbols, setSymbols] = useState<string[]>(getWatchlist());
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<StockSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -328,7 +328,7 @@ const Watchlist: React.FC<{ onSelect: (symbol: string, name: string) => void }> 
       <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Your Watchlist</h2>
       {loading && <div className="text-gray-600">Loading...</div>}
       <ul className="divide-y divide-gray-200">
-        {data.map((item, idx) => (
+        {data.map((item) => (
           <li key={item.symbol} className="flex items-center justify-between py-2">
             <button onClick={() => onSelect(item.symbol, item.name)} className="text-[#b01c2e] font-bold hover:underline">
               {item.symbol} <span className="text-gray-700 font-normal">{item.name}</span>
