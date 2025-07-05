@@ -68,7 +68,7 @@ const MarketNewsFeed: React.FC = () => {
         if (!res.ok) throw new Error('API error');
         const json = await res.json();
         setNews(json.slice(0, 8)); // Show top 8 headlines
-      } catch (e) {
+      } catch {
         setError('Failed to load news');
       } finally {
         setLoading(false);
