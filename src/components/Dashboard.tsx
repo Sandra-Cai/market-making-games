@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp, Newspaper } from 'lucide-react';
+import { Brain, Trophy, BarChart3, Star, Flame, Award, TrendingUp } from 'lucide-react';
 import { Game, GameStats } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import {
