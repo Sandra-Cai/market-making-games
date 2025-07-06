@@ -54,6 +54,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   const [orderPrice, setOrderPrice] = useState(marketState.currentPrice);
   const [orderQty, setOrderQty] = useState(100);
 
+  // Add state for help modal
+  const [showHelp, setShowHelp] = useState(false);
+
   const generateMarketEvent = useCallback(() => {
     const events = [
       { type: 'price_up', magnitude: 0.01, probability: 0.3 },
@@ -230,6 +233,14 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Market Making</h2>
         <div className="flex items-center gap-4">
+          <button
+            className="text-[#b01c2e] hover:text-[#a01a29] text-xl font-bold focus:outline-none"
+            aria-label="Show instructions"
+            onClick={() => setShowHelp(true)}
+            title="How to play"
+          >
+            <Info className="w-6 h-6" />
+          </button>
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{score}</span>
@@ -240,6 +251,30 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           </div>
         </div>
       </div>
+
+      {showHelp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full relative">
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-2xl font-bold"
+              onClick={() => setShowHelp(false)}
+              aria-label="Close instructions"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">How to Play Market Making</h2>
+            <ul className="text-gray-700 text-base list-disc pl-6 space-y-2 mb-4">
+              <li>Place <b>buy</b> and <b>sell</b> orders to make a market.</li>
+              <li>Your goal: <b>balance your book</b> and profit from the <b>spread</b>.</li>
+              <li>Watch the <b>order book</b> and react to market moves.</li>
+              <li>Try to maximize your profit while minimizing risk!</li>
+              <li>Score is based on how close your orders are to the market price and your trading activity.</li>
+              <li>Game ends when the timer reaches zero. Try to beat your high score!</li>
+            </ul>
+            <div className="text-gray-500 text-sm">Tip: Hover or tap on <Info className='inline w-4 h-4 align-text-bottom' /> icons for definitions of key terms.</div>
+          </div>
+        </div>
+      )}
 
       {gameMessage && (
         <motion.div
