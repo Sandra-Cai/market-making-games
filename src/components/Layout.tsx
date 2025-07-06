@@ -6,10 +6,10 @@ const NAV_RED = '#b01c2e';
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="min-h-screen bg-white text-black font-sans">
     {/* Top Navigation Bar */}
-    <nav className="sticky top-0 z-30 w-full bg-white/90 border-b border-gray-200 backdrop-blur flex items-center justify-between px-8 py-4">
-      <Link to="/" className="flex items-center gap-2 group">
+    <nav className="sticky top-0 z-30 w-full bg-white/90 border-b border-gray-200 backdrop-blur flex items-center justify-between px-8 py-4 overflow-x-auto">
+      <Link to="/" className="flex items-center gap-2 group pl-2 md:pl-4">
         {/* Optionally, add a concentric circle SVG here for demo purposes */}
-        <span className="text-2xl md:text-3xl font-extrabold font-serif tracking-tight" style={{ color: NAV_RED, fontFamily: 'Merriweather, serif' }}>
+        <span className="text-2xl md:text-3xl font-extrabold font-serif tracking-tight" style={{ color: NAV_RED, fontFamily: 'Merriweather, serif', whiteSpace: 'nowrap' }}>
           Market Making Games
         </span>
       </Link>

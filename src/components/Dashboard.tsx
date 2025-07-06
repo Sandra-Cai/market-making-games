@@ -530,31 +530,36 @@ const StockComparison: React.FC<StockComparisonProps> = ({ symbols, onClose }) =
 
 // OnboardingModal component
 const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div className="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full text-center relative">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, type: 'spring' }}
+      className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-10 max-w-xl w-full text-center relative flex flex-col items-center"
+    >
       <button
-        className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-2xl font-bold"
+        className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-3xl font-bold focus:outline-none"
         onClick={onClose}
         aria-label="Close welcome modal"
       >
         &times;
       </button>
-      <h2 className="text-3xl font-bold mb-4 text-[#b01c2e] font-serif">Welcome to Market Making Games!</h2>
-      <p className="text-lg text-gray-700 mb-4">
+      <h2 className="text-4xl font-extrabold mb-6 text-[#b01c2e] font-serif drop-shadow-sm">Welcome to Market Making Games!</h2>
+      <p className="text-xl text-gray-700 mb-6 font-sans max-w-lg mx-auto">
         This is your mental gym for quantitative careers. Play interactive games, track your stats, and follow live financial markets.
       </p>
-      <ul className="text-left text-gray-700 mb-6 space-y-2">
+      <ul className="text-left text-gray-700 mb-8 space-y-3 text-lg max-w-md mx-auto">
         <li><span className="font-bold text-[#b01c2e]">•</span> <b>Live Stock Ticker:</b> See real-time prices for top stocks and indices.</li>
         <li><span className="font-bold text-[#b01c2e]">•</span> <b>Market News:</b> Stay updated with the latest financial headlines.</li>
         <li><span className="font-bold text-[#b01c2e]">•</span> <b>Games:</b> Practice market making, probability, mental math, and more!</li>
       </ul>
       <button
-        className="mt-2 px-6 py-2 rounded-full bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all"
+        className="mt-2 px-10 py-4 rounded-full bg-[#b01c2e] text-white font-extrabold text-2xl shadow-lg hover:bg-[#a01a29] transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e] focus:ring-offset-2"
         onClick={onClose}
       >
         Get Started
       </button>
-    </div>
+    </motion.div>
   </div>
 );
 
@@ -780,8 +785,8 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
                 aria-label={`Play ${game.title}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * idx, duration: 0.5, type: 'spring' }}
               >
                 <span className="mb-2">{<game.icon className="w-12 h-12 text-[#b01c2e]" />}</span>
