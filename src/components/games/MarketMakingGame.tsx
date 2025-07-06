@@ -50,6 +50,10 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     { timestamp: number; price: number; quantity: number; side: 'buy' | 'sell' }[]
   >([]);
 
+  // Add state for controlled price and quantity inputs
+  const [orderPrice, setOrderPrice] = useState(marketState.currentPrice);
+  const [orderQty, setOrderQty] = useState(100);
+
   const generateMarketEvent = useCallback(() => {
     const events = [
       { type: 'price_up', magnitude: 0.01, probability: 0.3 },
@@ -319,15 +323,17 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           <div className="space-y-2">
             {/* Sell Orders */}
             <div className="text-[#b01c2e] text-sm font-semibold mb-2">SELL ORDERS</div>
-            {Array.from({ length: 5 }, (_, i) => (
-              <div key={`sell-${i}`} className="flex justify-between text-sm">
-                <span className="text-[#b01c2e]">
-                  ${(marketState.currentPrice + (i + 1) * 0.5).toFixed(2)}
-                </span>
-                <span className="text-gray-600">{Math.floor(Math.random() * 200) + 100}</span>
-              </div>
-            ))}
-
+            {Array.from({ length: 5 }, (_, i) => {
+              const price = marketState.currentPrice + (i + 1) * 0.5;
+              const userOrder = userOrders.find(o => o.side === 'sell' && Math.abs(o.price - price) < 0.01);
+              return (
+                <div key={`sell-${i}`} className={`flex justify-between text-sm ${userOrder ? 'bg-yellow-100 font-bold' : ''}`}>
+                  <span className="text-[#b01c2e]">${price.toFixed(2)}</span>
+                  <span className="text-gray-600">{userOrder ? userOrder.quantity : Math.floor(Math.random() * 200) + 100}</span>
+                  {userOrder && <span className="text-xs text-[#b01c2e] ml-2">Your Order</span>}
+                </div>
+              );
+            })}
             {/* Current Price */}
             <div className="border-t border-gray-200 my-2 pt-2">
               <div className="flex justify-between font-bold text-[#b01c2e]">
@@ -335,17 +341,19 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
                 <span>MARKET</span>
               </div>
             </div>
-
             {/* Buy Orders */}
             <div className="text-[#b01c2e] text-sm font-semibold mb-2">BUY ORDERS</div>
-            {Array.from({ length: 5 }, (_, i) => (
-              <div key={`buy-${i}`} className="flex justify-between text-sm">
-                <span className="text-[#b01c2e]">
-                  ${(marketState.currentPrice - (i + 1) * 0.5).toFixed(2)}
-                </span>
-                <span className="text-gray-600">{Math.floor(Math.random() * 200) + 100}</span>
-              </div>
-            ))}
+            {Array.from({ length: 5 }, (_, i) => {
+              const price = marketState.currentPrice - (i + 1) * 0.5;
+              const userOrder = userOrders.find(o => o.side === 'buy' && Math.abs(o.price - price) < 0.01);
+              return (
+                <div key={`buy-${i}`} className={`flex justify-between text-sm ${userOrder ? 'bg-yellow-100 font-bold' : ''}`}>
+                  <span className="text-[#b01c2e]">${price.toFixed(2)}</span>
+                  <span className="text-gray-600">{userOrder ? userOrder.quantity : Math.floor(Math.random() * 200) + 100}</span>
+                  {userOrder && <span className="text-xs text-[#b01c2e] ml-2">Your Order</span>}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -389,7 +397,8 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             <input
               type="number"
               step="0.01"
-              defaultValue={marketState.currentPrice}
+              value={orderPrice}
+              onChange={e => setOrderPrice(Number(e.target.value))}
               className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:border-[#b01c2e] focus:outline-none"
             />
           </div>
@@ -397,20 +406,21 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             <label className="block text-sm font-medium text-gray-600 mb-2">Quantity</label>
             <input
               type="number"
-              defaultValue={100}
+              value={orderQty}
+              onChange={e => setOrderQty(Number(e.target.value))}
               className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:border-[#b01c2e] focus:outline-none"
             />
           </div>
         </div>
         <div className="flex gap-3 mt-4">
           <button
-            onClick={() => placeOrder('buy', marketState.currentPrice, 100)}
+            onClick={() => placeOrder('buy', orderPrice, orderQty)}
             className="flex-1 bg-[#b01c2e] hover:bg-[#b01c2e]/80 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
           >
             BUY
           </button>
           <button
-            onClick={() => placeOrder('sell', marketState.currentPrice, 100)}
+            onClick={() => placeOrder('sell', orderPrice, orderQty)}
             className="flex-1 bg-[#b01c2e] hover:bg-[#b01c2e]/80 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
           >
             SELL
