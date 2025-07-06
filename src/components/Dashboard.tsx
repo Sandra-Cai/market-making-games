@@ -208,84 +208,13 @@ const StockDetails: React.FC<StockDetailsProps> = ({ symbol, name, onClose }) =>
   );
 };
 
-const StockSearch: React.FC<{ onShowDetails: (symbol: string, name: string) => void }> = ({ onShowDetails }) => {
-  const [query, setQuery] = useState('');
-  const [result, setResult] = useState<StockSummary | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      // Search for symbol
-      const symRes = await fetch(`https://finnhub.io/api/v1/search?q=${query}&token=${STOCK_API_KEY}`);
-      if (!symRes.ok) throw new Error('API error');
-      const symJson = await symRes.json();
-      if (!symJson.result || symJson.result.length === 0) throw new Error('No results');
-      const symbol = symJson.result[0].symbol;
-      const name = symJson.result[0].description;
-      onShowDetails(symbol, name);
-      // Get quote
-      const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
-      if (!quoteRes.ok) throw new Error('API error');
-      const quoteJson = await quoteRes.json();
-      setResult({
-        symbol,
-        name,
-        price: quoteJson.c,
-        change: quoteJson.d,
-        percent: quoteJson.dp,
-      });
-    } catch (err) {
-      setError('Stock not found or API error');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 w-full max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Stock Search</h2>
-      <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={query}
-          onChange={e => setQuery(e.target.value.toUpperCase())}
-          placeholder="Enter symbol (e.g. AAPL, TSLA)"
-          className="flex-1 border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:border-[#b01c2e]"
-        />
-        <button type="submit" className="px-6 py-2 rounded bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all">
-          Search
-        </button>
-      </form>
-      {loading && <div className="text-gray-600">Loading...</div>}
-      {error && <div className="text-red-700">{error}</div>}
-      {result && (
-        <div className="mt-4 p-4 rounded border border-gray-200 bg-white">
-          <div className="text-xl font-bold text-[#b01c2e]">{result.symbol} <span className="text-gray-700 font-normal">{result.name}</span></div>
-          <div className="text-lg text-gray-700">Price: <span className="font-bold">${result.price?.toFixed(2)}</span></div>
-          <div className={result.percent >= 0 ? 'text-green-600' : 'text-red-600'}>
-            Change: {result.change?.toFixed(2)} ({result.percent?.toFixed(2)}%)
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Watchlist utilities
-function getWatchlist(): string[] {
-  return JSON.parse(localStorage.getItem('mmg_watchlist') || '[]');
+// Update Watchlist props
+interface WatchlistProps {
+  onSelect: (symbol: string, name: string) => void;
+  selectedForComparison: { symbol: string; name: string }[];
+  setSelectedForComparison: React.Dispatch<React.SetStateAction<{ symbol: string; name: string }[]>>;
 }
-function setWatchlist(list: string[]) {
-  localStorage.setItem('mmg_watchlist', JSON.stringify(list));
-}
-
-// Watchlist component
-const Watchlist: React.FC<{ onSelect: (symbol: string, name: string) => void }> = ({ onSelect }) => {
+const Watchlist: React.FC<WatchlistProps> = ({ onSelect, selectedForComparison, setSelectedForComparison }) => {
   const [symbols, setSymbols] = useState<string[]>(getWatchlist());
   const [data, setData] = useState<StockSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -330,6 +259,19 @@ const Watchlist: React.FC<{ onSelect: (symbol: string, name: string) => void }> 
       <ul className="divide-y divide-gray-200">
         {data.map((item) => (
           <li key={item.symbol} className="flex items-center justify-between py-2">
+            <input
+              type="checkbox"
+              checked={selectedForComparison.some(s => s.symbol === item.symbol)}
+              onChange={e => {
+                if (e.target.checked) {
+                  setSelectedForComparison([...selectedForComparison, { symbol: item.symbol, name: item.name }]);
+                } else {
+                  setSelectedForComparison(selectedForComparison.filter(s => s.symbol !== item.symbol));
+                }
+              }}
+              className="mr-2"
+              aria-label={`Select ${item.symbol} for comparison`}
+            />
             <button onClick={() => onSelect(item.symbol, item.name)} className="text-[#b01c2e] font-bold hover:underline">
               {item.symbol} <span className="text-gray-700 font-normal">{item.name}</span>
             </button>
@@ -501,6 +443,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const [selectedName, setSelectedName] = useState('');
   // Add state to track selected stocks for comparison, and pass handlers to Watchlist and StockSearch
   const [selectedForComparison, setSelectedForComparison] = useState<{ symbol: string; name: string }[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem('mmg_onboarded')) {
@@ -802,23 +745,46 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             ))}
           </ul>
         </div>
-        <Watchlist onSelect={(symbol, name) => {
-          setSelectedSymbol(symbol);
-          setSelectedName(name);
-          setShowDetails(true);
-        }} />
+        <Watchlist
+          onSelect={(symbol, name) => {
+            setSelectedSymbol(symbol);
+            setSelectedName(name);
+            setShowDetails(true);
+          }}
+          selectedForComparison={selectedForComparison}
+          setSelectedForComparison={setSelectedForComparison}
+        />
         <StockSearch
           onShowDetails={(symbol, name) => {
             setSelectedSymbol(symbol);
             setSelectedName(name);
             setShowDetails(true);
           }}
+          selectedForComparison={selectedForComparison}
+          setSelectedForComparison={setSelectedForComparison}
         />
         {showDetails && selectedSymbol && selectedName && (
           <StockDetails
             symbol={selectedSymbol}
             name={selectedName}
             onClose={() => setShowDetails(false)}
+          />
+        )}
+        {selectedForComparison.length >= 2 && (
+          <button
+            className="mb-4 px-6 py-2 rounded bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all"
+            onClick={() => setShowComparison(true)}
+          >
+            Compare Selected
+          </button>
+        )}
+        {showComparison && (
+          <StockComparison
+            symbols={selectedForComparison}
+            onClose={() => {
+              setShowComparison(false);
+              setSelectedForComparison([]);
+            }}
           />
         )}
         <MarketNewsFeed />
