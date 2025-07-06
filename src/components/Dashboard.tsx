@@ -228,6 +228,7 @@ const Watchlist: React.FC<WatchlistProps> = ({ onSelect, selectedForComparison, 
   const [symbols, setSymbols] = useState<string[]>(getWatchlist());
   const [data, setData] = useState<StockSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setSymbols(getWatchlist());
@@ -236,9 +237,11 @@ const Watchlist: React.FC<WatchlistProps> = ({ onSelect, selectedForComparison, 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
+      setError(null);
       if (symbols.length === 0) { setData([]); setLoading(false); return; }
       if (!STOCK_API_KEY) {
         setError('Missing API key. Set REACT_APP_FINNHUB_API_KEY in your .env file.');
+        setLoading(false);
         return;
       }
       try {
@@ -269,6 +272,7 @@ const Watchlist: React.FC<WatchlistProps> = ({ onSelect, selectedForComparison, 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 w-full max-w-3xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Your Watchlist</h2>
+      {error && <div className="text-red-700">{error}</div>}
       {loading && <div className="text-gray-600">Loading...</div>}
       <ul className="divide-y divide-gray-200">
         {data.map((item) => (
