@@ -29,137 +29,6 @@ const dummyHistory = [
   { name: 'Sun', score: 1500 },
 ];
 
-const leaderboard = [
-  { name: 'Alice', score: 1500, change: '+2.1%' },
-  { name: 'Bob', score: 1400, change: '+1.7%' },
-  { name: 'You', score: 1200, change: '+1.2%' },
-  { name: 'Carol', score: 1100, change: '-0.5%' },
-  { name: 'Dave', score: 900, change: '-1.1%' },
-];
-
-const newsFeed = [
-  { title: 'How to Master Market Making', time: '2h ago' },
-  { title: 'Probability: The Secret Weapon in Trading', time: '5h ago' },
-  { title: 'Mental Math Tricks for Quants', time: '1d ago' },
-  { title: 'Strategy Game: New Scenarios Added!', time: '2d ago' },
-];
-
-// Add StockComparison modal
-interface StockComparisonProps {
-  symbols: { symbol: string; name: string }[];
-  onClose: () => void;
-}
-
-// Define StockComparisonData type for StockComparison
-interface StockComparisonData {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  percent: number;
-  prices: { date: string; close: number }[];
-  profile: { ticker?: string; exchange?: string; finnhubIndustry?: string };
-}
-
-const StockComparison: React.FC<StockComparisonProps> = ({ symbols, onClose }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<StockComparisonData[]>([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
-      try {
-        const results = await Promise.all(symbols.map(async ({ symbol, name }) => {
-          // Get quote
-          const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
-          const quoteJson = await quoteRes.json();
-          // Get historical prices (last 30 days)
-          const now = Math.floor(Date.now() / 1000);
-          const monthAgo = now - 60 * 60 * 24 * 30;
-          const priceRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${monthAgo}&to=${now}&token=${STOCK_API_KEY}`);
-          const priceJson = await priceRes.json();
-          const prices = priceJson.s === 'ok' ? priceJson.c.map((close: number, i: number) => ({
-            date: new Date(priceJson.t[i] * 1000).toLocaleDateString(),
-            close,
-          })) : [];
-          // Get profile
-          const profileRes = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${STOCK_API_KEY}`);
-          const profileJson = await profileRes.json();
-          return {
-            symbol,
-            name: name || profileJson.name || symbol,
-            price: quoteJson.c,
-            change: quoteJson.d,
-            percent: quoteJson.dp,
-            prices,
-            profile: profileJson,
-          };
-        }));
-        setData(results);
-      } catch {
-        setError('Failed to load comparison data');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [symbols]);
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl p-8 max-w-5xl w-full relative">
-        <button
-          className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-2xl font-bold"
-          onClick={onClose}
-          aria-label="Close stock comparison"
-        >
-          &times;
-        </button>
-        <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Stock Comparison</h2>
-        {loading && <div className="text-gray-600">Loading...</div>}
-        {error && <div className="text-red-700">{error}</div>}
-        {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {data.map((item) => (
-              <div key={item.symbol} className="border border-gray-200 rounded p-4 bg-white">
-                <div className="text-xl font-bold text-[#b01c2e] mb-1">{item.symbol} <span className="text-gray-700 font-normal">{item.name}</span></div>
-                <div className="text-lg text-gray-700 mb-1">Price: <span className="font-bold">${item.price?.toFixed(2)}</span></div>
-                <div className={item.percent >= 0 ? 'text-green-600' : 'text-red-600'}>
-                  Change: {item.change?.toFixed(2)} ({item.percent?.toFixed(2)}%)
-                </div>
-                <div className="my-2">
-                  <div className="text-xs text-gray-500 mb-1">Last 30 Days</div>
-                  <div className="w-full h-20 bg-gray-50 rounded flex items-end overflow-x-auto">
-                    {item.prices.length > 1 ? (
-                      <svg width="100%" height="100%" viewBox={`0 0 ${item.prices.length * 10} 80`} preserveAspectRatio="none">
-                        <polyline
-                          fill="none"
-                          stroke="#b01c2e"
-                          strokeWidth="2"
-                          points={item.prices.map((p, i) => `${i * 10},${80 - (p.close / Math.max(...item.prices.map(x => x.close))) * 70}`).join(' ')}
-                        />
-                      </svg>
-                    ) : (
-                      <div className="text-gray-400">No chart data</div>
-                    )}
-                  </div>
-                </div>
-                <div className="text-xs text-gray-500 mt-2">
-                  {item.profile.ticker && <span>Ticker: {item.profile.ticker} &middot; </span>}
-                  {item.profile.exchange && <span>Exchange: {item.profile.exchange} &middot; </span>}
-                  {item.profile.finnhubIndustry && <span>Sector: {item.profile.finnhubIndustry}</span>}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
 // OnboardingModal component
 const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
@@ -182,7 +51,6 @@ const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
       </p>
       <ul className="text-left text-gray-700 mb-8 space-y-3 text-lg max-w-md mx-auto">
         <li><span className="font-bold text-[#b01c2e]">•</span> <b>Live Stock Ticker:</b> See real-time prices for top stocks and indices.</li>
-        <li><span className="font-bold text-[#b01c2e]">•</span> <b>Market News:</b> Stay updated with the latest financial headlines.</li>
         <li><span className="font-bold text-[#b01c2e]">•</span> <b>Games:</b> Practice market making, probability, mental math, and more!</li>
       </ul>
       <button
@@ -457,53 +325,6 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             <div className="text-2xl font-bold text-[#b01c2e] mb-1">{userStats.level}</div>
             <div className="text-xs text-gray-600">Avg Score: {userStats.averageScore}</div>
           </div>
-        </div>
-        {/* Leaderboard */}
-        <div className="bg-white rounded-xl p-5 shadow-md">
-          <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-[#b01c2e]" />
-            <span className="font-semibold text-[#b01c2e]">Top Movers</span>
-          </div>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-gray-600">
-                <th className="text-left font-normal">Name</th>
-                <th className="text-right font-normal">Score</th>
-                <th className="text-right font-normal">Change</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaderboard.map((entry, idx) => (
-                <tr key={entry.name} className={idx === 2 ? 'bg-white/10' : ''}>
-                  <td className="py-1 font-semibold text-white">{entry.name}</td>
-                  <td className="py-1 text-right text-[#b01c2e] font-bold">{entry.score}</td>
-                  <td
-                    className={`py-1 text-right ${entry.change.startsWith('+') ? 'text-[#b01c2e]' : 'text-[#b01c2e]'}`}
-                  >
-                    {entry.change}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* News/Feed */}
-        <div className="col-span-1 md:col-span-3 bg-white rounded-xl p-5 shadow-md mt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Newspaper className="w-5 h-5 text-jsblue" />
-            <span className="font-semibold text-jsblue">Market News & Tips</span>
-          </div>
-          <ul>
-            {newsFeed.map((item, idx) => (
-              <li
-                key={idx}
-                className="flex justify-between py-2 border-b border-gray-200 last:border-0"
-              >
-                <span className="text-white font-medium">{item.title}</span>
-                <span className="text-gray-600 text-xs">{item.time}</span>
-              </li>
-            ))}
-          </ul>
         </div>
         {/* Removed Watchlist, StockSearch, StockDetails, StockComparison */}
 
