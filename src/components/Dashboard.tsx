@@ -575,13 +575,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const achievements = useGameStore((s) => s.achievements);
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
-  // Move StockDetails modal state up
-  const [showDetails, setShowDetails] = useState(false);
-  const [selectedSymbol, setSelectedSymbol] = useState('');
-  const [selectedName, setSelectedName] = useState('');
-  // Add state to track selected stocks for comparison, and pass handlers to Watchlist and StockSearch
-  const [selectedForComparison, setSelectedForComparison] = useState<{ symbol: string; name: string }[]>([]);
-  const [showComparison, setShowComparison] = useState(false);
+  // Removed all stock/market news/watchlist/stock search/stock details/stock comparison state
 
   useEffect(() => {
     if (!localStorage.getItem('mmg_onboarded')) {
@@ -886,49 +880,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             ))}
           </ul>
         </div>
-        <Watchlist
-          onSelect={(symbol: string, name: string) => {
-            setSelectedSymbol(symbol);
-            setSelectedName(name);
-            setShowDetails(true);
-          }}
-          selectedForComparison={selectedForComparison}
-          setSelectedForComparison={setSelectedForComparison}
-        />
-        <StockSearch
-          onShowDetails={(symbol: string, name: string) => {
-            setSelectedSymbol(symbol);
-            setSelectedName(name);
-            setShowDetails(true);
-          }}
-          selectedForComparison={selectedForComparison}
-          setSelectedForComparison={setSelectedForComparison}
-        />
-        {showDetails && selectedSymbol && selectedName && (
-          <StockDetails
-            symbol={selectedSymbol}
-            name={selectedName}
-            onClose={() => setShowDetails(false)}
-          />
-        )}
-        {selectedForComparison.length >= 2 && (
-          <button
-            className="mb-4 px-6 py-2 rounded bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all"
-            onClick={() => setShowComparison(true)}
-          >
-            Compare Selected
-          </button>
-        )}
-        {showComparison && (
-          <StockComparison
-            symbols={selectedForComparison}
-            onClose={() => {
-              setShowComparison(false);
-              setSelectedForComparison([]);
-            }}
-          />
-        )}
-        <MarketNewsFeed />
+        {/* Removed Watchlist, StockSearch, StockDetails, StockComparison */}
 
         {/* Footer */}
         <motion.div
