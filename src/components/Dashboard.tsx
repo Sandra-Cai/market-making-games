@@ -355,6 +355,111 @@ const Watchlist: React.FC<{ onSelect: (symbol: string, name: string) => void }> 
   );
 };
 
+// Add StockComparison modal
+interface StockComparisonProps {
+  symbols: { symbol: string; name: string }[];
+  onClose: () => void;
+}
+
+const StockComparison: React.FC<StockComparisonProps> = ({ symbols, onClose }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const results = await Promise.all(symbols.map(async ({ symbol, name }) => {
+          // Get quote
+          const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
+          const quoteJson = await quoteRes.json();
+          // Get historical prices (last 30 days)
+          const now = Math.floor(Date.now() / 1000);
+          const monthAgo = now - 60 * 60 * 24 * 30;
+          const priceRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${monthAgo}&to=${now}&token=${STOCK_API_KEY}`);
+          const priceJson = await priceRes.json();
+          const prices = priceJson.s === 'ok' ? priceJson.c.map((close: number, i: number) => ({
+            date: new Date(priceJson.t[i] * 1000).toLocaleDateString(),
+            close,
+          })) : [];
+          // Get profile
+          const profileRes = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${STOCK_API_KEY}`);
+          const profileJson = await profileRes.json();
+          return {
+            symbol,
+            name: name || profileJson.name || symbol,
+            price: quoteJson.c,
+            change: quoteJson.d,
+            percent: quoteJson.dp,
+            prices,
+            profile: profileJson,
+          };
+        }));
+        setData(results);
+      } catch {
+        setError('Failed to load comparison data');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [symbols]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-xl shadow-xl p-8 max-w-5xl w-full relative">
+        <button
+          className="absolute top-4 right-4 text-gray-400 hover:text-[#b01c2e] text-2xl font-bold"
+          onClick={onClose}
+          aria-label="Close stock comparison"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4 text-[#b01c2e] font-serif">Stock Comparison</h2>
+        {loading && <div className="text-gray-600">Loading...</div>}
+        {error && <div className="text-red-700">{error}</div>}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {data.map((item) => (
+              <div key={item.symbol} className="border border-gray-200 rounded p-4 bg-white">
+                <div className="text-xl font-bold text-[#b01c2e] mb-1">{item.symbol} <span className="text-gray-700 font-normal">{item.name}</span></div>
+                <div className="text-lg text-gray-700 mb-1">Price: <span className="font-bold">${item.price?.toFixed(2)}</span></div>
+                <div className={item.percent >= 0 ? 'text-green-600' : 'text-red-600'}>
+                  Change: {item.change?.toFixed(2)} ({item.percent?.toFixed(2)}%)
+                </div>
+                <div className="my-2">
+                  <div className="text-xs text-gray-500 mb-1">Last 30 Days</div>
+                  <div className="w-full h-20 bg-gray-50 rounded flex items-end overflow-x-auto">
+                    {item.prices.length > 1 ? (
+                      <svg width="100%" height="100%" viewBox={`0 0 ${item.prices.length * 10} 80`} preserveAspectRatio="none">
+                        <polyline
+                          fill="none"
+                          stroke="#b01c2e"
+                          strokeWidth="2"
+                          points={item.prices.map((p: any, i: number) => `${i * 10},${80 - (p.close / Math.max(...item.prices.map((x: any) => x.close))) * 70}`).join(' ')}
+                        />
+                      </svg>
+                    ) : (
+                      <div className="text-gray-400">No chart data</div>
+                    )}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  {item.profile.ticker && <span>Ticker: {item.profile.ticker} &middot; </span>}
+                  {item.profile.exchange && <span>Exchange: {item.profile.exchange} &middot; </span>}
+                  {item.profile.finnhubIndustry && <span>Sector: {item.profile.finnhubIndustry}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // OnboardingModal component
 const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -394,6 +499,8 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState('');
   const [selectedName, setSelectedName] = useState('');
+  // Add state to track selected stocks for comparison, and pass handlers to Watchlist and StockSearch
+  const [selectedForComparison, setSelectedForComparison] = useState<{ symbol: string; name: string }[]>([]);
 
   useEffect(() => {
     if (!localStorage.getItem('mmg_onboarded')) {
