@@ -334,7 +334,7 @@ const StockSearch: React.FC<StockSearchProps> = ({ onShowDetails, selectedForCom
         change: quoteJson.d,
         percent: quoteJson.dp,
       });
-    } catch (err) {
+    } catch {
       setError('Stock not found or API error');
     } finally {
       setLoading(false);
@@ -392,10 +392,21 @@ interface StockComparisonProps {
   onClose: () => void;
 }
 
+// Define StockComparisonData type for StockComparison
+interface StockComparisonData {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  percent: number;
+  prices: { date: string; close: number }[];
+  profile: { ticker?: string; exchange?: string; finnhubIndustry?: string };
+}
+
 const StockComparison: React.FC<StockComparisonProps> = ({ symbols, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<StockComparisonData[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -469,7 +480,7 @@ const StockComparison: React.FC<StockComparisonProps> = ({ symbols, onClose }) =
                           fill="none"
                           stroke="#b01c2e"
                           strokeWidth="2"
-                          points={item.prices.map((p: any, i: number) => `${i * 10},${80 - (p.close / Math.max(...item.prices.map((x: any) => x.close))) * 70}`).join(' ')}
+                          points={item.prices.map((p, i) => `${i * 10},${80 - (p.close / Math.max(...item.prices.map(x => x.close))) * 70}`).join(' ')}
                         />
                       </svg>
                     ) : (
