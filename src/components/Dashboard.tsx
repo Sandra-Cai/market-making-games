@@ -45,7 +45,8 @@ const newsFeed = [
 ];
 
 // Add MarketNewsFeed component
-const NEWS_API_KEY = 'YOUR_FINNHUB_API_KEY'; // Replace with your Finnhub API key
+// IMPORTANT: Set your Finnhub API key in a .env file as REACT_APP_FINNHUB_API_KEY=your_key_here
+const FINNHUB_API_KEY = process.env.REACT_APP_FINNHUB_API_KEY;
 
 interface NewsItem {
   headline: string;
@@ -63,8 +64,12 @@ const MarketNewsFeed: React.FC = () => {
     async function fetchNews() {
       setLoading(true);
       setError(null);
+      if (!FINNHUB_API_KEY) {
+        setError('Missing API key. Set REACT_APP_FINNHUB_API_KEY in your .env file.');
+        return;
+      }
       try {
-        const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${NEWS_API_KEY}`);
+        const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_API_KEY}`);
         if (!res.ok) throw new Error('API error');
         const json = await res.json();
         setNews(json.slice(0, 8)); // Show top 8 headlines
@@ -101,7 +106,8 @@ const MarketNewsFeed: React.FC = () => {
 };
 
 // Add StockSearch component
-const STOCK_API_KEY = 'YOUR_FINNHUB_API_KEY'; // Replace with your Finnhub API key
+// IMPORTANT: Set your Finnhub API key in a .env file as REACT_APP_FINNHUB_API_KEY=your_key_here
+const STOCK_API_KEY = process.env.REACT_APP_FINNHUB_API_KEY;
 
 interface StockSummary {
   symbol: string;
@@ -128,6 +134,10 @@ const StockDetails: React.FC<StockDetailsProps> = ({ symbol, name, onClose }) =>
     async function fetchDetails() {
       setLoading(true);
       setError(null);
+      if (!STOCK_API_KEY) {
+        setError('Missing API key. Set REACT_APP_FINNHUB_API_KEY in your .env file.');
+        return;
+      }
       try {
         // Get historical prices (last 30 days)
         const now = Math.floor(Date.now() / 1000);
@@ -227,6 +237,10 @@ const Watchlist: React.FC<WatchlistProps> = ({ onSelect, selectedForComparison, 
     async function fetchData() {
       setLoading(true);
       if (symbols.length === 0) { setData([]); setLoading(false); return; }
+      if (!STOCK_API_KEY) {
+        setError('Missing API key. Set REACT_APP_FINNHUB_API_KEY in your .env file.');
+        return;
+      }
       try {
         const results = await Promise.all(symbols.map(async (symbol) => {
           const quoteRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${STOCK_API_KEY}`);
@@ -314,6 +328,10 @@ const StockSearch: React.FC<StockSearchProps> = ({ onShowDetails, selectedForCom
     setLoading(true);
     setError(null);
     setResult(null);
+    if (!STOCK_API_KEY) {
+      setError('Missing API key. Set REACT_APP_FINNHUB_API_KEY in your .env file.');
+      return;
+    }
     try {
       // Search for symbol
       const symRes = await fetch(`https://finnhub.io/api/v1/search?q=${query}&token=${STOCK_API_KEY}`);
@@ -412,6 +430,10 @@ const StockComparison: React.FC<StockComparisonProps> = ({ symbols, onClose }) =
     async function fetchData() {
       setLoading(true);
       setError(null);
+      if (!STOCK_API_KEY) {
+        setError('Missing API key. Set REACT_APP_FINNHUB_API_KEY in your .env file.');
+        return;
+      }
       try {
         const results = await Promise.all(symbols.map(async ({ symbol, name }) => {
           // Get quote
