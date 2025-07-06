@@ -590,6 +590,10 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
     }
   }, []);
 
+  if (showOnboarding) {
+    return <OnboardingModal onClose={() => setShowOnboarding(false)} />;
+  }
+
   // Prepare data for the performance chart
   const chartData = gameHistory
     .slice()
@@ -603,7 +607,6 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      {showOnboarding && <OnboardingModal onClose={() => setShowOnboarding(false)} />}
       <div className="relative container mx-auto px-8 py-12 flex flex-col items-center justify-center min-h-[80vh] w-full gap-16 section-space overflow-hidden bg-white">
         {/* Header */}
         <motion.div
