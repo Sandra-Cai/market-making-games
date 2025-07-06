@@ -7,7 +7,7 @@ const STOCKS = [
   { symbol: '^GSPC', name: 'S&P 500' },
 ];
 
-const API_KEY = 'YOUR_FINNHUB_API_KEY'; // Replace with your Finnhub API key
+const API_KEY = process.env.REACT_APP_FINNHUB_API_KEY;
 
 interface StockData {
   symbol: string;
