@@ -57,6 +57,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   // Add state for help modal
   const [showHelp, setShowHelp] = useState(false);
 
+  // 1. Add Framer Motion animated score: animate the score number (scale up and fade in) when it increases.
+  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
+
   const generateMarketEvent = useCallback(() => {
     const events = [
       { type: 'price_up', magnitude: 0.01, probability: 0.3 },
@@ -142,6 +145,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     };
 
     setUserOrders((prev) => [...prev, order]);
+    setLastOrderId(order.id); // 2. Add lastOrderId state and highlight new orders in 'Your Orders' and order book with a yellow flash (using a CSS class and setTimeout to remove highlight).
 
     // Calculate score based on order placement
     const priceDiff = Math.abs(price - marketState.currentPrice);
@@ -333,21 +337,27 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             <div className="flex justify-between items-center">
               <span className="text-gray-600 flex items-center gap-1">
                 Spread
-                <Info className="w-4 h-4 text-[#b01c2e] cursor-help" title="The difference between the best ask and best bid prices. Lower spread = more competitive market." />
+                <span title="The difference between the best ask and best bid prices. Lower spread = more competitive market.">
+                  <Info className="w-4 h-4 text-[#b01c2e] cursor-help" />
+                </span>
               </span>
               <span className="font-bold text-[#b01c2e]">${marketState.spread.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600 flex items-center gap-1">
                 Volume
-                <Info className="w-4 h-4 text-[#b01c2e] cursor-help" title="The total number of shares/contracts traded in the market." />
+                <span title="The total number of shares/contracts traded in the market.">
+                  <Info className="w-4 h-4 text-[#b01c2e] cursor-help" />
+                </span>
               </span>
               <span className="font-bold text-[#b01c2e]">{marketState.volume.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600 flex items-center gap-1">
                 Volatility
-                <Info className="w-4 h-4 text-[#b01c2e] cursor-help" title="How much the price moves. Higher volatility = bigger price swings." />
+                <span title="How much the price moves. Higher volatility = bigger price swings.">
+                  <Info className="w-4 h-4 text-[#b01c2e] cursor-help" />
+                </span>
               </span>
               <span className="font-bold text-[#b01c2e]">{(marketState.volatility * 100).toFixed(1)}%</span>
             </div>
@@ -361,7 +371,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         <div className="bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-xl font-bold mb-4 text-[#b01c2e] flex items-center gap-2">
             Order Book
-            <Info className="w-5 h-5 text-[#b01c2e] cursor-help" title="A list of all buy and sell orders in the market, showing price and quantity." />
+            <span title="A list of all buy and sell orders in the market, showing price and quantity.">
+              <Info className="w-5 h-5 text-[#b01c2e] cursor-help" />
+            </span>
           </h3>
           <div className="space-y-2">
             {/* Sell Orders */}
