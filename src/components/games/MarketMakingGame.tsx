@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { TrendingUp, Clock, Target, CheckCircle, Info } from 'lucide-react';
 import { MarketState, MarketOrder, GameStats } from '../../types/game';
 import { XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import Confetti from 'react-confetti';
+import useSound from 'use-sound';
+import { useGameStore } from '../../store/gameStore';
 
 interface MarketMakingGameProps {
   onStatsUpdate: (stats: Partial<GameStats>) => void;
@@ -60,81 +63,15 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   // 1. Add Framer Motion animated score: animate the score number (scale up and fade in) when it increases.
   const [lastOrderId, setLastOrderId] = useState<string | null>(null);
 
-  const generateMarketEvent = useCallback(() => {
-    const events = [
-      { type: 'price_up', magnitude: 0.01, probability: 0.3 },
-      { type: 'price_down', magnitude: 0.01, probability: 0.3 },
-      { type: 'volatility_up', magnitude: 0.005, probability: 0.2 },
-      { type: 'volume_spike', magnitude: 500, probability: 0.2 },
-    ];
+  // 2. Add sound effect files (place in public/sounds/ or use a CDN for demo)
+  // Example: order.mp3, game-end.mp3
 
-    const random = Math.random();
-    let cumulative = 0;
+  // 3. Use useSound for order and game end
+  const soundEnabled = useGameStore((s) => s.soundEnabled);
+  const [playOrder] = useSound('/sounds/order.mp3', { soundEnabled });
+  const [playGameEnd] = useSound('/sounds/game-end.mp3', { soundEnabled });
 
-    for (const event of events) {
-      cumulative += event.probability;
-      if (random <= cumulative) {
-        return event;
-      }
-    }
-
-    return null;
-  }, []);
-
-  const updateMarket = useCallback(() => {
-    setMarketState((prev) => {
-      const event = generateMarketEvent();
-      let newPrice = prev.currentPrice;
-      let newVolatility = prev.volatility;
-      let newVolume = prev.volume;
-
-      if (event) {
-        switch (event.type) {
-          case 'price_up':
-            newPrice *= 1 + event.magnitude;
-            break;
-          case 'price_down':
-            newPrice *= 1 - event.magnitude;
-            break;
-          case 'volatility_up':
-            newVolatility += event.magnitude;
-            break;
-          case 'volume_spike':
-            newVolume += event.magnitude;
-            break;
-        }
-      }
-
-      // Add some random noise
-      const noise = (Math.random() - 0.5) * prev.volatility;
-      newPrice *= 1 + noise;
-
-      const finalPrice = Math.max(50, Math.min(200, newPrice));
-
-      // Update price history
-      setPriceHistory((prev) => [...prev.slice(-19), { timestamp: Date.now(), price: finalPrice }]);
-
-      // Simulate some trades
-      if (Math.random() > 0.7) {
-        const trade = {
-          timestamp: Date.now(),
-          price: finalPrice + (Math.random() - 0.5) * 2,
-          quantity: Math.floor(Math.random() * 100) + 50,
-          side: Math.random() > 0.5 ? ('buy' as const) : ('sell' as const),
-        };
-        setTradeHistory((prev) => [trade, ...prev.slice(0, 9)]);
-      }
-
-      return {
-        ...prev,
-        currentPrice: finalPrice,
-        volatility: Math.max(0.005, Math.min(0.1, newVolatility)),
-        volume: Math.max(100, Math.min(5000, newVolume)),
-        spread: prev.spread + (Math.random() - 0.5) * 0.1,
-      };
-    });
-  }, [generateMarketEvent]);
-
+  // 4. Play sound on order placement and game end
   const placeOrder = (side: 'buy' | 'sell', price: number, quantity: number) => {
     const order: MarketOrder = {
       id: Date.now().toString(),
@@ -154,6 +91,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
 
     setGameMessage(`Order placed: ${side} ${quantity} @ $${price.toFixed(2)}`);
     setTimeout(() => setGameMessage(''), 2000);
+    if (soundEnabled) playOrder();
   };
 
   const startGame = () => {
@@ -170,7 +108,8 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       totalScore: score,
       gamesPlayed: 1,
     });
-  }, [score, onStatsUpdate]);
+    if (soundEnabled) playGameEnd();
+  }, [score, onStatsUpdate, soundEnabled, playGameEnd]);
 
   useEffect(() => {
     if (gameState === 'playing') {
@@ -191,6 +130,16 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       };
     }
   }, [gameState, updateMarket, endGame]);
+
+  // 5. Confetti for high score
+  const userStats = useGameStore((s) => s.userStats);
+  const [showConfetti, setShowConfetti] = useState(false);
+  useEffect(() => {
+    if (gameState === 'finished' && score > (userStats.bestScore || 0)) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+    }
+  }, [gameState, score, userStats.bestScore]);
 
   if (gameState === 'waiting') {
     return (
@@ -513,6 +462,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           </div>
         )}
       </div>
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={300} />}
     </div>
   );
 };
