@@ -502,7 +502,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
                     <div
                       className={`w-3 h-3 rounded-full ${
                         order.side === 'buy' ? 'bg-[#b01c2e]' : 'bg-[#b01c2e]'
-                      }`}
+                      } ${order.id === lastOrderId ? 'animate-flash' : ''}`}
                     ></div>
                     <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
                     <span className="text-gray-600">{order.quantity}</span>

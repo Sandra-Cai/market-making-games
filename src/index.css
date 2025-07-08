@@ -107,6 +107,13 @@ nav {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
 }
+@keyframes flash {
+  0% { background-color: #fef08a; }
+  100% { background-color: transparent; }
+}
+.animate-flash {
+  animation: flash 1s ease;
+}
 
 .animate-fade-in {
   animation: fade-in 1s cubic-bezier(0.4,0,0.2,1) both;
