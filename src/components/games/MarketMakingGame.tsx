@@ -330,21 +330,26 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         <div className="bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Market Stats</h3>
           <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Spread:</span>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 flex items-center gap-1">
+                Spread
+                <Info className="w-4 h-4 text-[#b01c2e] cursor-help" title="The difference between the best ask and best bid prices. Lower spread = more competitive market." />
+              </span>
               <span className="font-bold text-[#b01c2e]">${marketState.spread.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Volume:</span>
-              <span className="font-bold text-[#b01c2e]">
-                {marketState.volume.toLocaleString()}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 flex items-center gap-1">
+                Volume
+                <Info className="w-4 h-4 text-[#b01c2e] cursor-help" title="The total number of shares/contracts traded in the market." />
               </span>
+              <span className="font-bold text-[#b01c2e]">{marketState.volume.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Volatility:</span>
-              <span className="font-bold text-[#b01c2e]">
-                {(marketState.volatility * 100).toFixed(1)}%
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 flex items-center gap-1">
+                Volatility
+                <Info className="w-4 h-4 text-[#b01c2e] cursor-help" title="How much the price moves. Higher volatility = bigger price swings." />
               </span>
+              <span className="font-bold text-[#b01c2e]">{(marketState.volatility * 100).toFixed(1)}%</span>
             </div>
           </div>
         </div>
@@ -354,7 +359,10 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Order Book */}
         <div className="bg-white rounded-xl p-6 shadow-md">
-          <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Order Book</h3>
+          <h3 className="text-xl font-bold mb-4 text-[#b01c2e] flex items-center gap-2">
+            Order Book
+            <Info className="w-5 h-5 text-[#b01c2e] cursor-help" title="A list of all buy and sell orders in the market, showing price and quantity." />
+          </h3>
           <div className="space-y-2">
             {/* Sell Orders */}
             <div className="text-[#b01c2e] text-sm font-semibold mb-2">SELL ORDERS</div>
