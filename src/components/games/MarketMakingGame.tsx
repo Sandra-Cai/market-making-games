@@ -118,6 +118,72 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     if (soundEnabled) playGameEnd();
   }, [score, onStatsUpdate, soundEnabled, playGameEnd]);
 
+  // Restore updateMarket function
+  const generateMarketEvent = useCallback(() => {
+    const events = [
+      { type: 'price_up', magnitude: 0.01, probability: 0.3 },
+      { type: 'price_down', magnitude: 0.01, probability: 0.3 },
+      { type: 'volatility_up', magnitude: 0.005, probability: 0.2 },
+      { type: 'volume_spike', magnitude: 500, probability: 0.2 },
+    ];
+    const random = Math.random();
+    let cumulative = 0;
+    for (const event of events) {
+      cumulative += event.probability;
+      if (random <= cumulative) {
+        return event;
+      }
+    }
+    return null;
+  }, []);
+  const updateMarket = useCallback(() => {
+    setMarketState((prev) => {
+      const event = generateMarketEvent();
+      let newPrice = prev.currentPrice;
+      let newVolatility = prev.volatility;
+      let newVolume = prev.volume;
+      if (event) {
+        switch (event.type) {
+          case 'price_up':
+            newPrice *= 1 + event.magnitude;
+            break;
+          case 'price_down':
+            newPrice *= 1 - event.magnitude;
+            break;
+          case 'volatility_up':
+            newVolatility += event.magnitude;
+            break;
+          case 'volume_spike':
+            newVolume += event.magnitude;
+            break;
+        }
+      }
+      // Add some random noise
+      const noise = (Math.random() - 0.5) * prev.volatility;
+      newPrice *= 1 + noise;
+      const finalPrice = Math.max(50, Math.min(200, newPrice));
+      // Update price history
+      setPriceHistory((prev) => [...prev.slice(-19), { timestamp: Date.now(), price: finalPrice }]);
+      // Simulate some trades
+      if (Math.random() > 0.7) {
+        const trade = {
+          timestamp: Date.now(),
+          price: finalPrice + (Math.random() - 0.5) * 2,
+          quantity: Math.floor(Math.random() * 100) + 50,
+          side: Math.random() > 0.5 ? ('buy' as const) : ('sell' as const),
+        };
+        setTradeHistory((prev) => [trade, ...prev.slice(0, 9)]);
+      }
+      return {
+        ...prev,
+        currentPrice: finalPrice,
+        volatility: Math.max(0.005, Math.min(0.1, newVolatility)),
+        volume: Math.max(100, Math.min(5000, newVolume)),
+        spread: prev.spread + (Math.random() - 0.5) * 0.1,
+      };
+    });
+  }, [generateMarketEvent]);
+
   useEffect(() => {
     if (gameState === 'playing') {
       const marketInterval = setInterval(updateMarket, 2000);
