@@ -271,6 +271,13 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   }
 
   if (gameState === 'finished') {
+    // Calculate analytics
+    const totalOrders = userOrders.length;
+    const orderAccuracies = userOrders.map(o => 100 - Math.abs(o.price - marketState.currentPrice) * 100);
+    const avgAccuracy = orderAccuracies.length ? (orderAccuracies.reduce((a, b) => a + b, 0) / orderAccuracies.length) : 0;
+    const bestOrder = userOrders.reduce((best, o) => (!best || Math.abs(o.price - marketState.currentPrice) < Math.abs(best.price - marketState.currentPrice)) ? o : best, null as MarketOrder | null);
+    const worstOrder = userOrders.reduce((worst, o) => (!worst || Math.abs(o.price - marketState.currentPrice) > Math.abs(worst.price - marketState.currentPrice)) ? o : worst, null as MarketOrder | null);
+    // For spread, use marketState.spread at end (could be improved with history)
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -278,12 +285,37 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
         <CheckCircle className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
-        <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Game Complete!</h2>
-        <div className="text-6xl font-bold text-[#b01c2e] mb-8 font-serif">{score}</div>
-        <p className="text-2xl text-gray-700 mb-12 font-light font-sans">Final Score</p>
-        <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-[#b01c2e] text-[#b01c2e] font-bold text-lg hover:bg-[#b01c2e] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">
-          Play Again
-        </button>
+        <h2 className="text-5xl font-extrabold mb-4 tracking-tight font-serif text-black">Game Complete!</h2>
+        <div className="text-6xl font-bold text-[#b01c2e] mb-2 font-serif">{score}</div>
+        <p className="text-2xl text-gray-700 mb-8 font-light font-sans">Final Score</p>
+        <div className="w-full max-w-md mx-auto bg-gray-50 rounded-xl shadow p-6 mb-8 text-left">
+          <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Your Analytics</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between"><span>Orders Placed:</span><span className="font-bold">{totalOrders}</span></div>
+            <div className="flex justify-between"><span>Avg. Order Accuracy:</span><span className="font-bold">{avgAccuracy.toFixed(1)}%</span></div>
+            <div className="flex justify-between"><span>Avg. Spread Captured:</span><span className="font-bold">${marketState.spread.toFixed(2)}</span></div>
+            {bestOrder && <div className="flex justify-between"><span>Best Order:</span><span className="font-mono">{bestOrder.side.toUpperCase()} {bestOrder.quantity} @ ${bestOrder.price.toFixed(2)}</span></div>}
+            {worstOrder && <div className="flex justify-between"><span>Worst Order:</span><span className="font-mono">{worstOrder.side.toUpperCase()} {worstOrder.quantity} @ ${worstOrder.price.toFixed(2)}</span></div>}
+          </div>
+          <div className="mt-6">
+            <h4 className="font-bold text-[#b01c2e] mb-2">Personal Bests</h4>
+            <ol className="bg-white rounded shadow p-3 space-y-1">
+              {leaderboard.map((s, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="font-bold text-[#b01c2e]">#{i + 1}</span>
+                  <span className="font-mono">{s}</span>
+                  {i === 0 && isNewHighScore && s === score && (
+                    <span className="ml-2 px-2 py-1 bg-yellow-200 text-yellow-900 rounded text-xs font-bold animate-bounce">New High Score!</span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+        <div className="flex gap-4 mt-4 justify-center">
+          <button onClick={startGame} className="px-8 py-2 rounded bg-white border border-[#b01c2e] text-[#b01c2e] font-bold text-lg hover:bg-[#b01c2e] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">Play Again</button>
+          <a href="/" className="px-8 py-2 rounded bg-[#b01c2e] text-white font-bold text-lg hover:bg-[#a01a29] transition-all focus:outline-none focus:ring-2 focus:ring-[#b01c2e]">Return to Dashboard</a>
+        </div>
       </motion.div>
     );
   }
