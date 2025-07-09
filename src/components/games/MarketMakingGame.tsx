@@ -152,6 +152,21 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   }, []);
   const updateMarket = useCallback(() => {
     setMarketState((prev) => {
+      let eventName: string | null = null;
+      let eventEffect = null;
+      // 10% chance for a market event
+      if (Math.random() < 0.1) {
+        if (Math.random() < 0.5) {
+          eventName = 'Volatility Spike!';
+          eventEffect = (state: MarketState) => ({ ...state, volatility: Math.min(0.1, state.volatility * 2) });
+        } else {
+          eventName = 'Breaking News!';
+          eventEffect = (state: MarketState) => ({ ...state, currentPrice: state.currentPrice * (1 + (Math.random() - 0.5) * 0.1) });
+        }
+        setMarketEvent(eventName);
+        setShowMarketEvent(true);
+        setTimeout(() => setShowMarketEvent(false), 3500);
+      }
       const event = generateMarketEvent();
       let newPrice = prev.currentPrice;
       let newVolatility = prev.volatility;
@@ -172,10 +187,15 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             break;
         }
       }
+      // Apply market event effect if any
+      let nextState = { ...prev, currentPrice: newPrice, volatility: newVolatility, volume: newVolume };
+      if (eventEffect) {
+        nextState = eventEffect(nextState);
+      }
       // Add some random noise
-      const noise = (Math.random() - 0.5) * prev.volatility;
-      newPrice *= 1 + noise;
-      const finalPrice = Math.max(50, Math.min(200, newPrice));
+      const noise = (Math.random() - 0.5) * nextState.volatility;
+      nextState.currentPrice *= 1 + noise;
+      const finalPrice = Math.max(50, Math.min(200, nextState.currentPrice));
       // Update price history
       setPriceHistory((prev) => [...prev.slice(-19), { timestamp: Date.now(), price: finalPrice }]);
       // Simulate some trades
@@ -202,11 +222,11 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         );
       }
       return {
-        ...prev,
+        ...nextState,
         currentPrice: finalPrice,
-        volatility: Math.max(0.005, Math.min(0.1, newVolatility)),
-        volume: Math.max(100, Math.min(5000, newVolume)),
-        spread: prev.spread + (Math.random() - 0.5) * 0.1,
+        volatility: Math.max(0.005, Math.min(0.1, nextState.volatility)),
+        volume: Math.max(100, Math.min(5000, nextState.volume)),
+        spread: nextState.spread + (Math.random() - 0.5) * 0.1,
       };
     });
   }, [generateMarketEvent]);
@@ -639,6 +659,18 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             ))}
           </ol>
         </div>
+      )}
+      {showMarketEvent && marketEvent && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-[#b01c2e] text-white text-lg font-bold shadow-lg border border-[#b01c2e]"
+          role="status"
+          aria-live="polite"
+        >
+          {marketEvent}
+        </motion.div>
       )}
     </div>
   );
