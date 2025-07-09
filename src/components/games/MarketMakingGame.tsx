@@ -65,6 +65,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   // Add state for help modal
   const [showHelp, setShowHelp] = useState(false);
 
+  // Add state for order type
+  const [orderType, setOrderType] = useState<'limit' | 'market'>('limit');
+
   // 1. Add Framer Motion animated score: animate the score number (scale up and fade in) when it increases.
   const [lastOrderId, setLastOrderId] = useState<string | null>(null);
 
@@ -88,7 +91,27 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
 
   // 4. Play sound on order placement and game end
   const placeOrder = (side: 'buy' | 'sell', price: number, quantity: number) => {
-    const order: MarketOrder = {
+    if (orderType === 'market') {
+      const order: UserOrder = {
+        id: Date.now().toString(),
+        side,
+        price: marketState.currentPrice,
+        quantity,
+        timestamp: Date.now(),
+        filled: true,
+        fillQty: quantity,
+      };
+      setUserOrders((prev) => [...prev, order]);
+      setLastOrderId(order.id);
+      // Score for market order: less than limit, encourage limit making
+      const scoreGain = Math.round(50 * (difficulty === 'easy' ? 0.7 : difficulty === 'hard' ? 1.3 : 1));
+      setScore((prev) => prev + scoreGain);
+      setGameMessage(`Market order filled: ${side} ${quantity} @ $${marketState.currentPrice.toFixed(2)}`);
+      setTimeout(() => setGameMessage(''), 2000);
+      if (soundEnabled) playOrder();
+      return;
+    }
+    const order: UserOrder = {
       id: Date.now().toString(),
       side,
       price,
@@ -106,7 +129,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     const scoreGain = Math.round(baseScore * multiplier);
     setScore((prev) => prev + scoreGain);
 
-    setGameMessage(`Order placed: ${side} ${quantity} @ $${price.toFixed(2)}`);
+    setGameMessage(`Limit order placed: ${side} ${quantity} @ $${price.toFixed(2)}`);
     setTimeout(() => setGameMessage(''), 2000);
     if (soundEnabled) playOrder();
   };
@@ -163,9 +186,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           eventName = 'Breaking News!';
           eventEffect = (state: MarketState) => ({ ...state, currentPrice: state.currentPrice * (1 + (Math.random() - 0.5) * 0.1) });
         }
-        setMarketEvent(eventName);
-        setShowMarketEvent(true);
-        setTimeout(() => setShowMarketEvent(false), 3500);
+        // setMarketEvent(eventName); // This line was removed from the new_code, so it's removed here.
+        // setShowMarketEvent(true); // This line was removed from the new_code, so it's removed here.
+        // setTimeout(() => setShowMarketEvent(false), 3500); // This line was removed from the new_code, so it's removed here.
       }
       const event = generateMarketEvent();
       let newPrice = prev.currentPrice;
@@ -576,6 +599,23 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       <div className="bg-white rounded-xl p-6 shadow-md">
         <h3 className="text-xl font-bold mb-4 text-[#b01c2e]">Place Orders</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mb-4 flex gap-4 items-center">
+            <label className="font-semibold text-[#b01c2e]">Order Type:</label>
+            <button
+              className={`px-4 py-1 rounded-full border-2 font-bold text-sm transition-all focus:outline-none ${orderType === 'limit' ? 'bg-[#b01c2e] text-white border-[#b01c2e]' : 'bg-white text-[#b01c2e] border-[#b01c2e]'}`}
+              onClick={() => setOrderType('limit')}
+              aria-pressed={orderType === 'limit'}
+            >
+              Limit
+            </button>
+            <button
+              className={`px-4 py-1 rounded-full border-2 font-bold text-sm transition-all focus:outline-none ${orderType === 'market' ? 'bg-[#b01c2e] text-white border-[#b01c2e]' : 'bg-white text-[#b01c2e] border-[#b01c2e]'}`}
+              onClick={() => setOrderType('market')}
+              aria-pressed={orderType === 'market'}
+            >
+              Market
+            </button>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-2">Price</label>
             <input
@@ -660,18 +700,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           </ol>
         </div>
       )}
-      {showMarketEvent && marketEvent && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-[#b01c2e] text-white text-lg font-bold shadow-lg border border-[#b01c2e]"
-          role="status"
-          aria-live="polite"
-        >
-          {marketEvent}
-        </motion.div>
-      )}
+      {/* showMarketEvent and marketEvent were removed from the new_code, so they are removed here. */}
     </div>
   );
 };
