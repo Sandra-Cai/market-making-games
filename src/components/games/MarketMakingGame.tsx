@@ -70,6 +70,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   });
   const [isNewHighScore, setIsNewHighScore] = useState(false);
 
+  // 1. Add difficulty state
+  const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard'>('normal');
+
   // 2. Add sound effect files (place in public/sounds/ or use a CDN for demo)
   // Example: order.mp3, game-end.mp3
 
@@ -91,9 +94,11 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     setUserOrders((prev) => [...prev, order]);
     setLastOrderId(order.id); // 2. Add lastOrderId state and highlight new orders in 'Your Orders' and order book with a yellow flash (using a CSS class and setTimeout to remove highlight).
 
-    // Calculate score based on order placement
+    // Calculate score based on order placement and difficulty
     const priceDiff = Math.abs(price - marketState.currentPrice);
-    const scoreGain = Math.max(0, 100 - priceDiff * 100);
+    let baseScore = Math.max(0, 100 - priceDiff * 100);
+    const multiplier = difficulty === 'easy' ? 0.7 : difficulty === 'hard' ? 1.3 : 1;
+    const scoreGain = Math.round(baseScore * multiplier);
     setScore((prev) => prev + scoreGain);
 
     setGameMessage(`Order placed: ${side} ${quantity} @ $${price.toFixed(2)}`);
@@ -104,9 +109,13 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   const startGame = () => {
     setGameState('playing');
     setScore(0);
-    setTimeLeft(60);
+    setTimeLeft(difficulty === 'easy' ? 90 : difficulty === 'hard' ? 45 : 60);
     setUserOrders([]);
     setGameMessage('Game started! Place orders to make markets.');
+    setMarketState((prev) => ({
+      ...prev,
+      volatility: difficulty === 'easy' ? 0.01 : difficulty === 'hard' ? 0.04 : 0.02,
+    }));
   };
 
   const endGame = useCallback(() => {
@@ -235,6 +244,21 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       >
         <TrendingUp className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
         <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Market Making Challenge</h2>
+        <div className="mb-8">
+          <label className="block mb-2 text-lg font-semibold text-[#b01c2e]">Select Difficulty:</label>
+          <div className="flex gap-4 justify-center">
+            {['easy', 'normal', 'hard'].map((level) => (
+              <button
+                key={level}
+                onClick={() => setDifficulty(level as 'easy' | 'normal' | 'hard')}
+                className={`px-6 py-2 rounded-full border-2 font-bold text-lg transition-all focus:outline-none ${difficulty === level ? 'bg-[#b01c2e] text-white border-[#b01c2e]' : 'bg-white text-[#b01c2e] border-[#b01c2e]'}`}
+                aria-pressed={difficulty === level}
+              >
+                {level.charAt(0).toUpperCase() + level.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
         <p className="text-2xl text-gray-700 mb-12 max-w-xl mx-auto font-light font-sans">
           Practice market making by placing buy and sell orders. Your goal is to maintain a balanced
           book while profiting from the spread. Watch the market move and react quickly!
@@ -287,6 +311,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
             <Clock className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{timeLeft}s</span>
           </div>
+          <span className="ml-4 px-3 py-1 rounded-full bg-[#b01c2e]/10 text-[#b01c2e] text-sm font-bold border border-[#b01c2e]">{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span>
         </div>
       </div>
 
@@ -550,7 +575,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={300} />}
 
       {/* Leaderboard */}
-      {gameState === 'finished' && (
+      {gameState === 'playing' && (
         <div className="mt-8 max-w-md mx-auto">
           <h3 className="text-xl font-bold mb-2 text-[#b01c2e]">Leaderboard</h3>
           <ol className="bg-white rounded-xl shadow p-4 space-y-2">
