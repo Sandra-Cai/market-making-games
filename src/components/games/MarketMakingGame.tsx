@@ -7,6 +7,11 @@ import Confetti from 'react-confetti';
 import useSound from 'use-sound';
 import { useGameStore } from '../../store/gameStore';
 
+// Move these type definitions above the component
+// 1. Update MarketOrder type to include 'filled' and 'fillQty'
+type UserOrder = MarketOrder & { filled?: boolean; fillQty?: number };
+type UserOrdersState = UserOrder[];
+
 interface MarketMakingGameProps {
   onStatsUpdate: (stats: Partial<GameStats>) => void;
 }
@@ -34,7 +39,6 @@ const InstructionsSection = () => (
 );
 
 const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) => {
-  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
   const [marketState, setMarketState] = useState<MarketState>({
     currentPrice: 100,
     spread: 0.5,
@@ -45,8 +49,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     volumeHistory: [{ timestamp: Date.now(), volume: 1000 }],
   });
   const [score, setScore] = useState(0);
+  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
   const [timeLeft, setTimeLeft] = useState(60);
-  const [userOrders, setUserOrders] = useState<MarketOrder[]>([]);
+  const [userOrders, setUserOrders] = useState<UserOrdersState>([]);
   const [gameMessage, setGameMessage] = useState('');
   const [priceHistory, setPriceHistory] = useState<{ timestamp: number; price: number }[]>([]);
   const [tradeHistory, setTradeHistory] = useState<
@@ -182,6 +187,19 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           side: Math.random() > 0.5 ? ('buy' as const) : ('sell' as const),
         };
         setTradeHistory((prev) => [trade, ...prev.slice(0, 9)]);
+        // Simulate order matching: fill user orders if price crosses
+        setUserOrders((orders) =>
+          orders.map((order) => {
+            if (order.filled) return order;
+            if (
+              (order.side === 'buy' && trade.side === 'sell' && trade.price <= order.price) ||
+              (order.side === 'sell' && trade.side === 'buy' && trade.price >= order.price)
+            ) {
+              return { ...order, filled: true, fillQty: trade.quantity };
+            }
+            return order;
+          })
+        );
       }
       return {
         ...prev,
@@ -587,16 +605,15 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
               .map((order) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200"
+                  className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 ${order.filled ? 'bg-green-100 animate-pulse' : 'bg-gray-100'}`}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-3 h-3 rounded-full ${
-                        order.side === 'buy' ? 'bg-[#b01c2e]' : 'bg-[#b01c2e]'
-                      } ${order.id === lastOrderId ? 'animate-flash' : ''}`}
+                      className={`w-3 h-3 rounded-full ${order.side === 'buy' ? 'bg-[#b01c2e]' : 'bg-[#b01c2e]'} ${order.id === lastOrderId ? 'animate-flash' : ''}`}
                     ></div>
                     <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
                     <span className="text-gray-600">{order.quantity}</span>
+                    {order.filled && <span className="ml-2 px-2 py-1 bg-green-200 text-green-900 rounded text-xs font-bold animate-bounce">Filled{order.fillQty ? ` (${order.fillQty})` : ''}</span>}
                   </div>
                   <span className="font-bold text-[#b01c2e]">${order.price.toFixed(2)}</span>
                 </div>
