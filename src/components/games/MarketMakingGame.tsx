@@ -9,7 +9,7 @@ import { useGameStore } from '../../store/gameStore';
 
 // Move these type definitions above the component
 // 1. Update MarketOrder type to include 'filled' and 'fillQty'
-type UserOrder = MarketOrder & { filled?: boolean; fillQty?: number };
+type UserOrder = MarketOrder & { filled?: boolean; fillQty?: number; expiry?: number; remainingQty?: number; expired?: boolean };
 type UserOrdersState = UserOrder[];
 
 interface MarketMakingGameProps {
@@ -68,6 +68,9 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   // Add state for order type
   const [orderType, setOrderType] = useState<'limit' | 'market'>('limit');
 
+  // Add state for order expiry
+  const [orderExpiry, setOrderExpiry] = useState(10); // default 10 seconds
+
   // 1. Add Framer Motion animated score: animate the score number (scale up and fade in) when it increases.
   const [lastOrderId, setLastOrderId] = useState<string | null>(null);
 
@@ -111,12 +114,17 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       if (soundEnabled) playOrder();
       return;
     }
+    const now = Date.now();
     const order: UserOrder = {
-      id: Date.now().toString(),
+      id: now.toString(),
       side,
       price,
       quantity,
-      timestamp: Date.now(),
+      timestamp: now,
+      expiry: now + orderExpiry * 1000,
+      remainingQty: quantity,
+      filled: false,
+      fillQty: 0,
     };
 
     setUserOrders((prev) => [...prev, order]);
@@ -635,6 +643,21 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
               className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:border-[#b01c2e] focus:outline-none"
             />
           </div>
+          {orderType === 'limit' && (
+            <div className="mb-4 flex gap-4 items-center">
+              <label className="font-semibold text-[#b01c2e]">Expiry:</label>
+              {[5, 10, 20].map((sec) => (
+                <button
+                  key={sec}
+                  className={`px-3 py-1 rounded-full border-2 font-bold text-sm transition-all focus:outline-none ${orderExpiry === sec ? 'bg-[#b01c2e] text-white border-[#b01c2e]' : 'bg-white text-[#b01c2e] border-[#b01c2e]'}`}
+                  onClick={() => setOrderExpiry(sec)}
+                  aria-pressed={orderExpiry === sec}
+                >
+                  {sec}s
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex gap-3 mt-4">
           <button
@@ -665,7 +688,7 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
               .map((order) => (
                 <div
                   key={order.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 ${order.filled ? 'bg-green-100 animate-pulse' : 'bg-gray-100'}`}
+                  className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 ${order.filled ? 'bg-green-100 animate-pulse' : order.expired ? 'bg-gray-200 text-gray-400' : 'bg-gray-100'}`}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -673,7 +696,14 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
                     ></div>
                     <span className="font-semibold text-white">{order.side.toUpperCase()}</span>
                     <span className="text-gray-600">{order.quantity}</span>
-                    {order.filled && <span className="ml-2 px-2 py-1 bg-green-200 text-green-900 rounded text-xs font-bold animate-bounce">Filled{order.fillQty ? ` (${order.fillQty})` : ''}</span>}
+                    {/* Only show one status badge per order */}
+                    {order.expired ? (
+                      <span className="ml-2 px-2 py-1 bg-gray-300 text-gray-700 rounded text-xs font-bold">Expired</span>
+                    ) : order.filled ? (
+                      <span className="ml-2 px-2 py-1 bg-green-200 text-green-900 rounded text-xs font-bold animate-bounce">Filled</span>
+                    ) : (order.remainingQty ?? 0) > 0 ? (
+                      <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-900 rounded text-xs font-bold">{order.remainingQty} left</span>
+                    ) : null}
                   </div>
                   <span className="font-bold text-[#b01c2e]">${order.price.toFixed(2)}</span>
                 </div>
