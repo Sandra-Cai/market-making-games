@@ -63,6 +63,13 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   // 1. Add Framer Motion animated score: animate the score number (scale up and fade in) when it increases.
   const [lastOrderId, setLastOrderId] = useState<string | null>(null);
 
+  // 1. Add local leaderboard state and helpers
+  const [leaderboard, setLeaderboard] = useState<number[]>(() => {
+    const stored = localStorage.getItem('mmg_leaderboard');
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [isNewHighScore, setIsNewHighScore] = useState(false);
+
   // 2. Add sound effect files (place in public/sounds/ or use a CDN for demo)
   // Example: order.mp3, game-end.mp3
 
@@ -130,6 +137,18 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
       };
     }
   }, [gameState, updateMarket, endGame]);
+
+  // 2. On game end, update leaderboard
+  useEffect(() => {
+    if (gameState === 'finished') {
+      setLeaderboard(prev => {
+        const updated = [...prev, score].sort((a, b) => b - a).slice(0, 5);
+        localStorage.setItem('mmg_leaderboard', JSON.stringify(updated));
+        setIsNewHighScore(score > Math.max(0, ...prev));
+        return updated;
+      });
+    }
+  }, [gameState, score]);
 
   // 5. Confetti for high score
   const userStats = useGameStore((s) => s.userStats);
@@ -463,6 +482,24 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
         )}
       </div>
       {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={300} />}
+
+      {/* Leaderboard */}
+      {gameState === 'finished' && (
+        <div className="mt-8 max-w-md mx-auto">
+          <h3 className="text-xl font-bold mb-2 text-[#b01c2e]">Leaderboard</h3>
+          <ol className="bg-white rounded-xl shadow p-4 space-y-2">
+            {leaderboard.map((s, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <span className="font-bold text-lg text-[#b01c2e]">#{i + 1}</span>
+                <span className="text-lg font-mono">{s}</span>
+                {i === 0 && isNewHighScore && s === score && (
+                  <span className="ml-2 px-2 py-1 bg-yellow-200 text-yellow-900 rounded text-xs font-bold animate-bounce">New High Score!</span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
     </div>
   );
 };
