@@ -9,7 +9,7 @@ import { useGameStore } from '../../store/gameStore';
 
 // Move these type definitions above the component
 // 1. Update MarketOrder type to include 'filled' and 'fillQty'
-type UserOrder = MarketOrder & { filled?: boolean; fillQty?: number; expiry?: number; remainingQty?: number; expired?: boolean };
+type UserOrder = MarketOrder & { filled?: boolean; fillQty?: number; expiry?: number; remainingQty?: number; expired?: boolean; autoLiquidation?: boolean };
 type UserOrdersState = UserOrder[];
 
 interface MarketMakingGameProps {
@@ -88,6 +88,10 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   const [inventory, setInventory] = useState(0); // positive = long, negative = short
   const [realizedPnL, setRealizedPnL] = useState(0);
   const [unrealizedPnL, setUnrealizedPnL] = useState(0);
+
+  // Add state for risk warning
+  const INVENTORY_LIMIT = 500;
+  const [showRiskWarning, setShowRiskWarning] = useState(false);
 
   // 2. Add sound effect files (place in public/sounds/ or use a CDN for demo)
   // Example: order.mp3, game-end.mp3
@@ -179,6 +183,37 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     // Unrealized PnL: value of current inventory at market price
     setUnrealizedPnL(inv * marketState.currentPrice + realized);
   }, [userOrders, marketState.currentPrice]);
+
+  // Show warning if inventory approaches threshold
+  useEffect(() => {
+    if (Math.abs(inventory) >= INVENTORY_LIMIT * 0.8 && Math.abs(inventory) < INVENTORY_LIMIT) {
+      setShowRiskWarning(true);
+    } else {
+      setShowRiskWarning(false);
+    }
+    // Auto-liquidate if over limit
+    if (Math.abs(inventory) >= INVENTORY_LIMIT) {
+      // Auto-liquidate: execute a market order to flatten
+      const side = inventory > 0 ? 'sell' : 'buy';
+      const qty = Math.abs(inventory);
+      const order: UserOrder = {
+        id: Date.now().toString() + '-auto',
+        side,
+        price: marketState.currentPrice,
+        quantity: qty,
+        timestamp: Date.now(),
+        filled: true,
+        fillQty: qty,
+        autoLiquidation: true,
+      };
+      setUserOrders((prev) => [...prev, order]);
+      setLastOrderId(order.id);
+      setGameMessage(`Auto-liquidation: ${side.toUpperCase()} ${qty} @ $${marketState.currentPrice.toFixed(2)} (Inventory exceeded limit)`);
+      // Escalating penalty: $5 per share/contract
+      setScore((prev) => prev - qty * 5);
+      setInventory(0);
+    }
+  }, [inventory, marketState.currentPrice]);
 
   const endGame = useCallback(() => {
     let penalty = 0;
@@ -487,6 +522,19 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           className="text-center py-2 px-4 bg-[#b01c2e]/20 rounded-lg text-[#b01c2e]"
         >
           {gameMessage}
+        </motion.div>
+      )}
+
+      {showRiskWarning && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-yellow-300 text-yellow-900 text-lg font-bold shadow-lg border border-yellow-500"
+          role="status"
+          aria-live="polite"
+        >
+          Warning: Inventory approaching risk limit! Auto-liquidation at ±{INVENTORY_LIMIT}
         </motion.div>
       )}
 
