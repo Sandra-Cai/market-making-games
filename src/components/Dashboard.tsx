@@ -68,11 +68,26 @@ const OnboardingModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
+// Daily Challenge logic
+const getTodayChallenge = () => {
+  const challenges = [
+    { id: 1, title: 'Score 500+ in Mental Math', game: 'mental-math', target: 500, reward: 'Daily Streak +1' },
+    { id: 2, title: 'Win a Market Making game', game: 'market-making', target: 1, reward: 'Bonus Achievement' },
+    { id: 3, title: 'Answer 3 Probability questions correctly', game: 'probability', target: 3, reward: 'Probability Pro Badge' },
+    { id: 4, title: 'Play any game', game: 'any', target: 1, reward: 'Participation Badge' },
+  ];
+  const day = new Date().getDate() % challenges.length;
+  return challenges[day];
+};
+
 const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
   const gameHistory = useGameStore((s) => s.gameHistory);
   const achievements = useGameStore((s) => s.achievements);
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [challengeCompleted, setChallengeCompleted] = useState(false);
+  const [challengeClaimed, setChallengeClaimed] = useState(false);
+  const todayChallenge = getTodayChallenge();
   // Removed all stock/market news/watchlist/stock search/stock details/stock comparison state
 
   useEffect(() => {
@@ -81,6 +96,19 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
       localStorage.setItem('mmg_onboarded', '1');
     }
   }, []);
+
+  useEffect(() => {
+    const completed = localStorage.getItem('dailyChallengeCompleted') === 'true';
+    const claimed = localStorage.getItem('dailyChallengeClaimed') === 'true';
+    setChallengeCompleted(completed);
+    setChallengeClaimed(claimed);
+  }, []);
+
+  const handleClaim = () => {
+    setChallengeClaimed(true);
+    localStorage.setItem('dailyChallengeClaimed', 'true');
+    // Optionally, add reward logic here (e.g., increment streak, add badge)
+  };
 
   if (showOnboarding) {
     return <OnboardingModal onClose={() => setShowOnboarding(false)} />;
@@ -164,6 +192,24 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
             <p className="text-lg text-gray-700 font-light font-sans">Current Streak</p>
           </div>
         </motion.div>
+
+        {/* Daily Challenge Card */}
+        <div className="w-full max-w-md mx-auto mb-8">
+          <div className="p-4 bg-yellow-100 dark:bg-yellow-900 rounded shadow flex flex-col items-center">
+            <h3 className="text-lg font-bold mb-2 text-yellow-800 dark:text-yellow-200">Today's Challenge</h3>
+            <div className="mb-2 text-center">{todayChallenge.title}</div>
+            <div className="mb-2 text-sm text-yellow-700 dark:text-yellow-300">Reward: {todayChallenge.reward}</div>
+            {challengeCompleted ? (
+              challengeClaimed ? (
+                <div className="text-green-600 font-bold">Reward Claimed!</div>
+              ) : (
+                <button onClick={handleClaim} className="px-4 py-2 bg-green-600 text-white rounded font-bold mt-2">Claim Reward</button>
+              )
+            ) : (
+              <div className="text-gray-500">Complete the challenge to claim your reward!</div>
+            )}
+          </div>
+        </div>
 
         {/* Performance Chart & Achievements */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
