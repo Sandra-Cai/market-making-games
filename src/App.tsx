@@ -66,7 +66,7 @@ const updateGameStats = (gameId: string, score: number) => {
   // Update leaderboard
   const leaderboardKey = 'leaderboard';
   const leaderboard = JSON.parse(localStorage.getItem(leaderboardKey) || '[]');
-  const name = 'Player1'; // Replace with real user name if available
+  const name = localStorage.getItem('username') || 'Player1';
   const updatedLeaders = [...leaderboard, { name, score }]
     .sort((a, b) => b.score - a.score)
     .slice(0, 10);
@@ -94,6 +94,25 @@ const updateGameStats = (gameId: string, score: number) => {
   if (gameId === 'mental-math' && score >= 800 && !earned.includes('Math Whiz')) earned.push('Math Whiz');
   if (gameId === 'market-making' && score >= 900 && !earned.includes('Market Master')) earned.push('Market Master');
   localStorage.setItem(achievementsKey, JSON.stringify(earned));
+
+  // Daily Challenge check
+  const getTodayChallenge = () => {
+    const challenges = [
+      { id: 1, title: 'Score 500+ in Mental Math', game: 'mental-math', target: 500, reward: 'Daily Streak +1' },
+      { id: 2, title: 'Win a Market Making game', game: 'market-making', target: 1, reward: 'Bonus Achievement' },
+      { id: 3, title: 'Answer 3 Probability questions correctly', game: 'probability', target: 3, reward: 'Probability Pro Badge' },
+      { id: 4, title: 'Play any game', game: 'any', target: 1, reward: 'Participation Badge' },
+    ];
+    const day = new Date().getDate() % challenges.length;
+    return challenges[day];
+  };
+  const todayChallenge = getTodayChallenge();
+  let completed = false;
+  if (todayChallenge.game === 'any' && score > 0) completed = true;
+  if (todayChallenge.game === gameId && todayChallenge.game === 'mental-math' && score >= todayChallenge.target) completed = true;
+  if (todayChallenge.game === gameId && todayChallenge.game === 'market-making' && score > 0) completed = true;
+  // For probability, you may want to track correct answers in the game for a real implementation
+  if (completed) localStorage.setItem('dailyChallengeCompleted', 'true');
 };
 
 const App: React.FC = () => {
