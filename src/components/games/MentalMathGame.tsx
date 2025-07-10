@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Zap, CheckCircle, XCircle, Clock, Target } from 'lucide-react';
 import { MathProblem, GameStats } from '../../types/game';
+import useSound from 'use-sound';
+import Confetti from 'react-confetti';
 
 interface MentalMathGameProps {
   onStatsUpdate: (stats: Partial<GameStats>) => void;
@@ -16,6 +18,9 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
   const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [playGameEnd] = useSound('/sounds/game-end.mp3', { soundEnabled: localStorage.getItem('sound') !== 'false' });
+  const [playAchievement] = useSound('/sounds/achievement.mp3', { soundEnabled: localStorage.getItem('sound') !== 'false' });
 
   const generateProblem = (): MathProblem => {
     const operations = ['+', '-', '*', '/'];
@@ -112,7 +117,15 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
       totalScore: score,
       gamesPlayed: 1,
     });
-  }, [score, onStatsUpdate]);
+    playGameEnd();
+    // Confetti and achievement sound for high score/achievement
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+    if (leaderboard.length === 0 || score > leaderboard[0].score) {
+      setShowConfetti(true);
+      playAchievement();
+      setTimeout(() => setShowConfetti(false), 4000);
+    }
+  }, [score, onStatsUpdate, playGameEnd, playAchievement]);
 
   useEffect(() => {
     if (gameState === 'playing') {
@@ -173,6 +186,7 @@ const MentalMathGame: React.FC<MentalMathGameProps> = ({ onStatsUpdate }) => {
         animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center justify-center text-center py-20 max-w-2xl mx-auto bg-white"
       >
+        {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={300} />}
         <CheckCircle className="w-16 h-16 text-[#b01c2e] mx-auto mb-8" />
         <h2 className="text-5xl font-extrabold mb-8 tracking-tight font-serif text-black">Drills Complete!</h2>
         <div className="text-6xl font-bold text-[#b01c2e] mb-8 font-serif">{score}</div>
