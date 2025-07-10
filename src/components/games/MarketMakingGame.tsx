@@ -84,6 +84,11 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
   // 1. Add difficulty state
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard'>('normal');
 
+  // Add state for inventory and P&L
+  const [inventory, setInventory] = useState(0); // positive = long, negative = short
+  const [realizedPnL, setRealizedPnL] = useState(0);
+  const [unrealizedPnL, setUnrealizedPnL] = useState(0);
+
   // 2. Add sound effect files (place in public/sounds/ or use a CDN for demo)
   // Example: order.mp3, game-end.mp3
 
@@ -154,14 +159,41 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
     }));
   };
 
+  // Update inventory and P&L when orders are filled
+  useEffect(() => {
+    let inv = 0;
+    let realized = 0;
+    userOrders.forEach(order => {
+      if (order.filled && order.fillQty && order.fillQty > 0) {
+        if (order.side === 'buy') {
+          inv += order.fillQty;
+          realized -= order.fillQty * order.price;
+        } else if (order.side === 'sell') {
+          inv -= order.fillQty;
+          realized += order.fillQty * order.price;
+        }
+      }
+    });
+    setInventory(inv);
+    setRealizedPnL(realized);
+    // Unrealized PnL: value of current inventory at market price
+    setUnrealizedPnL(inv * marketState.currentPrice + realized);
+  }, [userOrders, marketState.currentPrice]);
+
   const endGame = useCallback(() => {
+    let penalty = 0;
+    if (inventory !== 0) {
+      penalty = Math.abs(inventory) * 2; // $2 penalty per share/contract
+      setGameMessage(`Inventory penalty: -${penalty} points for holding ${inventory}`);
+    }
+    setScore((prev) => prev - penalty);
     setGameState('finished');
     onStatsUpdate({
-      totalScore: score,
+      totalScore: score - penalty,
       gamesPlayed: 1,
     });
     if (soundEnabled) playGameEnd();
-  }, [score, onStatsUpdate, soundEnabled, playGameEnd]);
+  }, [score, onStatsUpdate, soundEnabled, playGameEnd, inventory]);
 
   // Restore updateMarket function
   const generateMarketEvent = useCallback(() => {
@@ -411,6 +443,14 @@ const MarketMakingGame: React.FC<MarketMakingGameProps> = ({ onStatsUpdate }) =>
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-[#b01c2e]" />
             <span className="text-xl font-bold">{timeLeft}s</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-[#b01c2e]">Inv:</span>
+            <span className="text-xl font-mono" title="Net position (long/short)">{inventory}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-[#b01c2e]">P&L:</span>
+            <span className={`text-xl font-mono ${unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>{unrealizedPnL.toFixed(2)}</span>
           </div>
           <span className="ml-4 px-3 py-1 rounded-full bg-[#b01c2e]/10 text-[#b01c2e] text-sm font-bold border border-[#b01c2e]">{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span>
         </div>
