@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const SettingsPanel: React.FC = () => {
-  const [theme, setTheme] = useState('light');
-  const [sound, setSound] = useState(true);
-  const [difficulty, setDifficulty] = useState('normal');
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  const [sound, setSound] = useState(() => localStorage.getItem('sound') !== 'false');
+  const [difficulty, setDifficulty] = useState(() => localStorage.getItem('difficulty') || 'normal');
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('sound', sound ? 'true' : 'false');
+  }, [sound]);
+
+  useEffect(() => {
+    localStorage.setItem('difficulty', difficulty);
+  }, [difficulty]);
 
   return (
     <div className="p-4 bg-white dark:bg-gray-800 rounded shadow w-full max-w-sm mx-auto">
