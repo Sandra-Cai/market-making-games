@@ -13,6 +13,11 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
+import UserProfile from './UserProfile';
+import Leaderboard from './Leaderboard';
+import SettingsPanel from './SettingsPanel';
+import Achievements from './Achievements';
+import GameHistory from './GameHistory';
 
 interface DashboardProps {
   games: Game[];
@@ -327,6 +332,22 @@ const Dashboard: React.FC<DashboardProps> = ({ games, userStats }) => {
           </div>
         </div>
         {/* Removed Watchlist, StockSearch, StockDetails, StockComparison */}
+
+        {/* Add-on Features Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 w-full">
+          <div><UserProfile /></div>
+          <div><Leaderboard /></div>
+          <div><SettingsPanel /></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 w-full">
+          <div><Achievements /></div>
+          <div><GameHistory /></div>
+        </div>
+        <div className="flex justify-center mb-12">
+          <button className="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold shadow hover:bg-blue-700 transition-all" onClick={() => alert('Challenge mode coming soon!')}>
+            Challenge a Friend
+          </button>
+        </div>
 
         {/* Footer */}
         <motion.div
